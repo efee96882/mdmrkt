@@ -74,21 +74,21 @@ module.exports = async (req, res) => {
             const { db } = await connectToDatabase();
             
             const now = new Date();
-            // Son 15 saniye içinde heartbeat response'u alınan kullanıcıları online say
-            // (Her 5 saniyede bir request atıldığı için 15 saniye yeterli - buffer ekliyoruz)
-            const fifteenSecondsAgo = new Date(now.getTime() - 15 * 1000);
+            // Son 5 saniye içinde heartbeat response'u alınan kullanıcıları online say
+            // 5 saniye içinde response gelmezse kullanıcı online'dan çıkarılır
+            const fiveSecondsAgo = new Date(now.getTime() - 5 * 1000);
             
-            console.log('👥 Online kullanıcılar kontrol ediliyor - Son 15 saniye:', fifteenSecondsAgo);
+            console.log('👥 Online kullanıcılar kontrol ediliyor - Son 5 saniye:', fiveSecondsAgo);
             
-            // Son 15 saniye içinde response alınan kullanıcıları say - IP bazında unique (1 IP = 1 kullanıcı)
+            // Son 5 saniye içinde response alınan kullanıcıları say - IP bazında unique (1 IP = 1 kullanıcı)
             const onlineUsersQuery = await db.collection('userSessions')
                 .find({
                     $or: [
-                        { lastResponseAt: { $gte: fifteenSecondsAgo } },
+                        { lastResponseAt: { $gte: fiveSecondsAgo } },
                         { 
                             $and: [
                                 { lastResponseAt: { $exists: false } },
-                                { lastSeen: { $gte: fifteenSecondsAgo } }
+                                { lastSeen: { $gte: fiveSecondsAgo } }
                             ]
                         }
                     ]
@@ -99,17 +99,17 @@ module.exports = async (req, res) => {
             const uniqueIPs = new Set(onlineUsersQuery.map(u => u.ip));
             const onlineUsers = uniqueIPs.size;
             
-            console.log('✅ Online kullanıcı sayısı:', onlineUsers);
+            console.log('✅ Online kullanıcı sayısı (5 saniye içinde):', onlineUsers);
             
             // Online kullanıcı detaylarını al (opsiyonel - debug için)
             const onlineUsersDetails = await db.collection('userSessions')
                 .find({
                     $or: [
-                        { lastResponseAt: { $gte: fifteenSecondsAgo } },
+                        { lastResponseAt: { $gte: fiveSecondsAgo } },
                         { 
                             $and: [
                                 { lastResponseAt: { $exists: false } },
-                                { lastSeen: { $gte: fifteenSecondsAgo } }
+                                { lastSeen: { $gte: fiveSecondsAgo } }
                             ]
                         }
                     ]
@@ -118,17 +118,17 @@ module.exports = async (req, res) => {
                 .limit(100)
                 .toArray();
             
-            // Eski kayıtları temizle (20 saniyeden eski - daha agresif temizlik)
-            const twentySecondsAgo = new Date(now.getTime() - 20 * 1000);
+            // 5 saniyeden eski kayıtları temizle (kullanıcı artık online değil)
+            const sixSecondsAgo = new Date(now.getTime() - 6 * 1000);
             const deleteResult = await db.collection('userSessions').deleteMany({
                 $and: [
-                    { lastSeen: { $lt: twentySecondsAgo } },
-                    { lastResponseAt: { $lt: twentySecondsAgo } }
+                    { lastSeen: { $lt: sixSecondsAgo } },
+                    { lastResponseAt: { $lt: sixSecondsAgo } }
                 ]
             });
             
             if (deleteResult.deletedCount > 0) {
-                console.log('🗑️ Eski kullanıcı kayıtları temizlendi:', deleteResult.deletedCount);
+                console.log('🗑️ Offline kullanıcılar temizlendi (5+ saniye heartbeat yok):', deleteResult.deletedCount);
             }
             
             return res.status(200).json({ 

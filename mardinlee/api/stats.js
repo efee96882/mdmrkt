@@ -21,15 +21,16 @@ module.exports = async (req, res) => {
         // Toplam sepet sayısı
         const totalCarts = await db.collection('carts').countDocuments();
         
-        // Aktif kullanıcı sayısı - Son 15 saniye içinde heartbeat gönderenler - IP bazında unique (1 IP = 1 kullanıcı)
-        const fifteenSecondsAgo = new Date(now.getTime() - 15 * 1000);
+        // Aktif kullanıcı sayısı - Son 5 saniye içinde heartbeat gönderenler - IP bazında unique (1 IP = 1 kullanıcı)
+        // 5 saniye içinde response gelmezse kullanıcı online'dan çıkarılır
+        const fiveSecondsAgo = new Date(now.getTime() - 5 * 1000);
         const onlineUsersQuery = await db.collection('userSessions').find({
             $or: [
-                { lastResponseAt: { $gte: fifteenSecondsAgo } },
+                { lastResponseAt: { $gte: fiveSecondsAgo } },
                 { 
                     $and: [
                         { lastResponseAt: { $exists: false } },
-                        { lastSeen: { $gte: fifteenSecondsAgo } }
+                        { lastSeen: { $gte: fiveSecondsAgo } }
                     ]
                 }
             ]
