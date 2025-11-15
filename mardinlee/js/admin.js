@@ -293,6 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadActivities();
     updateOnlineUsers();
     
+    // Her 10 saniyede bir online kullanıcı sayısını güncelle
+    const onlineUsersInterval = setInterval(() => {
+        updateOnlineUsers();
+    }, 10000); // 10 saniye
+    
     // Her 30 saniyede bir stats güncelle
     const statsInterval = setInterval(() => {
         loadStats();
@@ -302,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cleanup (sayfa kapatılırken interval'ları temizle)
     window.addEventListener('unload', () => {
         clearInterval(statsInterval);
+        clearInterval(onlineUsersInterval);
     });
 });
 
