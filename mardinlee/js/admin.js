@@ -148,6 +148,29 @@ async function loadStats() {
     }
 }
 
+// Send Heartbeat - Kullanıcının online olduğunu bildirir
+async function sendHeartbeat() {
+    try {
+        const userId = localStorage.getItem('userId') || 'anonymous-' + Date.now();
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', userId);
+        }
+        
+        await fetch('/api/online-users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+                userAgent: navigator.userAgent
+            })
+        });
+    } catch (error) {
+        console.error('Heartbeat gönderilirken hata:', error);
+    }
+}
+
 // Update Online Users
 async function updateOnlineUsers() {
     try {
@@ -199,12 +222,48 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPurchases();
     loadStats();
     loadActivities();
+    updateOnlineUsers();
     
-    // Refresh stats every 30 seconds
+    // İlk heartbeat gönder
+    sendHeartbeat();
+    
+    // Her 30 saniyede bir heartbeat gönder (online kal)
+    setInterval(() => {
+        sendHeartbeat();
+    }, 30000);
+    
+    // Her 30 saniyede bir stats güncelle
     setInterval(() => {
         loadStats();
         updateOnlineUsers();
         loadActivities();
     }, 30000);
+    
+    // Sayfa kapatılırken son heartbeat
+    window.addEventListener('beforeunload', () => {
+        sendHeartbeat();
+    });
+    
+    // Sayfa görünür olduğunda heartbeat gönder
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            sendHeartbeat();
+            updateOnlineUsers();
+        }
+    });
+    
+    // Mouse hareketi, klavye tuşları, scroll ile de heartbeat gönder (aktif kullanıcı)
+    let activityTimer;
+    const resetActivityTimer = () => {
+        clearTimeout(activityTimer);
+        activityTimer = setTimeout(() => {
+            sendHeartbeat();
+        }, 10000); // 10 saniye hareketsizlikten sonra heartbeat
+    };
+    
+    window.addEventListener('mousemove', resetActivityTimer);
+    window.addEventListener('keypress', resetActivityTimer);
+    window.addEventListener('scroll', resetActivityTimer);
+    window.addEventListener('click', resetActivityTimer);
 });
 

@@ -11,8 +11,13 @@ module.exports = async (req, res) => {
         // Toplam sepet sayısı
         const totalCarts = await db.collection('carts').countDocuments();
         
-        // Online kullanıcı sayısı (socket.io'dan alınacak, şimdilik 0)
-        const onlineUsers = 0;
+        // Online kullanıcı sayısı - Son 5 dakika içinde aktivitesi olan
+        const now = new Date();
+        const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+        const onlineUsers = await db.collection('userSessions')
+            .countDocuments({
+                lastSeen: { $gte: fiveMinutesAgo }
+            });
 
         return res.status(200).json({
             totalCarts,

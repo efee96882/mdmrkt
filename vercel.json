@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/**/*.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node"
     },
     "mardinlee/api/**/*.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node"
     }
   },
   "rewrites": [
@@ -31,6 +31,10 @@
     {
       "source": "/api/activity",
       "destination": "/mardinlee/api/activity.js"
+    },
+    {
+      "source": "/api/heartbeat",
+      "destination": "/mardinlee/api/heartbeat.js"
     }
   ],
   "headers": [
