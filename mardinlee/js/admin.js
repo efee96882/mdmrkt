@@ -286,38 +286,12 @@ async function loadActivities() {
 
 // Initialize - Sayfa yüklendiğinde çalışır
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Admin panel yüklendi - Heartbeat başlatılıyor...');
+    console.log('🚀 Admin panel yüklendi');
     
     loadPurchases();
     loadStats();
     loadActivities();
     updateOnlineUsers();
-    
-    // İlk heartbeat gönder (hemen - sayfa açılınca)
-    console.log('📤 İlk heartbeat gönderiliyor...');
-    sendHeartbeat().then((success) => {
-        if (success) {
-            console.log('✅ İlk heartbeat başarılı - Online sayısı güncelleniyor...');
-            updateOnlineUsers();
-        }
-    });
-    
-    // Her 5 saniyede bir heartbeat gönder (sürekli online kal)
-    // Response gelirse kullanıcı online sayılır
-    const heartbeatInterval = setInterval(async () => {
-        const success = await sendHeartbeat();
-        if (success) {
-            // Her başarılı heartbeat'te online sayısını güncelle
-            updateOnlineUsers();
-        }
-    }, 5000); // 5 saniye
-    
-    console.log('⏰ Heartbeat interval başlatıldı - Her 5 saniyede bir istek gönderilecek');
-    
-    // Her 10 saniyede bir online kullanıcı sayısını güncelle (ayrı interval)
-    const onlineCheckInterval = setInterval(() => {
-        updateOnlineUsers();
-    }, 10000); // 10 saniye
     
     // Her 30 saniyede bir stats güncelle
     const statsInterval = setInterval(() => {
@@ -325,36 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadActivities();
     }, 30000); // 30 saniye
     
-    // Sayfa görünür olduğunda heartbeat gönder
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            console.log('👁️ Sayfa görünür oldu - Heartbeat gönderiliyor...');
-            sendHeartbeat().then(() => {
-                updateOnlineUsers();
-            });
-        }
-    });
-    
-    // Sayfa yüklendiğinde ve focus olduğunda
-    window.addEventListener('focus', () => {
-        console.log('🎯 Window focus oldu - Heartbeat gönderiliyor...');
-        sendHeartbeat().then(() => {
-            updateOnlineUsers();
-        });
-    });
-    
-    // Network durumu değiştiğinde
-    window.addEventListener('online', () => {
-        console.log('🌐 Network online oldu - Heartbeat gönderiliyor...');
-        sendHeartbeat().then(() => {
-            updateOnlineUsers();
-        });
-    });
-    
     // Cleanup (sayfa kapatılırken interval'ları temizle)
     window.addEventListener('unload', () => {
-        clearInterval(heartbeatInterval);
-        clearInterval(onlineCheckInterval);
         clearInterval(statsInterval);
     });
 });

@@ -370,14 +370,13 @@ body {
   }
   
   
-  /* noto-sans-regular - latin */
+  /* System fonts - External font URL'leri kaldırıldı (CORS hatası önlemek için) */
+  /* noto-sans-regular - latin - System font fallback */
   @font-face {
     font-family: NotoSansDisplay;
     font-style: normal;
     font-weight: 400;
-    src: 
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-400.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-400.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    src: local("Arial"), local("Helvetica"), local("sans-serif");
   }
 
   /* Regular fallback- 400 */
@@ -388,56 +387,47 @@ body {
     src: local("Arial");
   }
 
-  /* noto-sans-600 - latin */
+  /* noto-sans-600 - latin - System font fallback */
   @font-face {
     font-family: NotoSansDisplay;
     font-style: normal;
     font-weight: 600;
-    src: 
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-600.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    src: local("Arial Bold"), local("Helvetica Bold"), local("sans-serif");
   }
 
-  /* noto-sans-700 - latin */
+  /* noto-sans-700 - latin - System font fallback */
   @font-face {
     font-family: NotoSansDisplay;
     font-style: normal;
     font-weight: 700;
-    src: 
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('https://www.mediamarkt.de/assets/fonts/noto-sans-display-v10-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    src: local("Arial Bold"), local("Helvetica Bold"), local("sans-serif");
   }
 
-  /* Regular - 400 */
+  /* Regular - 400 - System font fallback */
   @font-face {
     font-family: MMHeadline;
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    src:
-      url(https://www.mediamarkt.de/assets/fonts/MMHeadlineProWebTT-Regular_subset.woff2) format('woff2'),
-      url(https://www.mediamarkt.de/assets/fonts/MMHeadlineProWebTT-Regular_subset.woff) format('woff');
+    src: local("Arial"), local("Helvetica"), local("sans-serif");
   }
 
-  /* Regular - 400 */
+  /* Regular - 400 - System font fallback */
   @font-face {
     font-family: MMPrice;
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    src:
-      url(https://www.mediamarkt.de/assets/fonts/MediaMarktPreise.woff2) format('woff2'),
-      url(https://www.mediamarkt.de/assets/fonts/MediaMarktPreise.woff) format('woff');
+    src: local("Arial"), local("Helvetica"), local("sans-serif");
   }
 
+  /* Calibri - System font fallback */
   @font-face {
     font-family: Calibri;
     font-weight: bold;
     font-style: normal;
     font-display: swap;
-    src:
-      url(https://www.mediamarkt.de/assets/fonts/Calibri-Bold-subset.woff2) format('woff2'),
-      url(https://www.mediamarkt.de/assets/fonts/Calibri-Bold-subset.woff) format('woff');
+    src: local("Calibri Bold"), local("Arial Bold"), local("Helvetica Bold"), local("sans-serif");
   }
   
   false

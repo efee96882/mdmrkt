@@ -89,6 +89,79 @@
     </div>
 
     <script src="js/admin.js"></script>
+    
+    <!-- Heartbeat - Basit GET isteği ile online kontrol -->
+    <script>
+    (function() {
+        console.log('🔥 Heartbeat başlatılıyor...');
+        
+        // Basit heartbeat fonksiyonu - Network'te görünecek
+        function pingHeartbeat() {
+            const timestamp = Date.now();
+            const url = '/api/heartbeat?t=' + timestamp + '&r=' + Math.random();
+            
+            console.log('📤 Heartbeat gönderiliyor:', url);
+            
+            fetch(url, {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
+            })
+            .then(response => {
+                console.log('📡 Heartbeat response status:', response.status);
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Response not OK: ' + response.status);
+                }
+            })
+            .then(data => {
+                console.log('✅ Heartbeat OK - Kullanıcı ONLINE:', data);
+                if (data.status === 'ok' && data.ip) {
+                    console.log('✅ IP:', data.ip, 'Online sayılıyor');
+                    // Online kullanıcı sayısını güncelle
+                    updateOnlineCount();
+                }
+            })
+            .catch(error => {
+                console.error('❌ Heartbeat hatası:', error);
+            });
+        }
+        
+        // Online kullanıcı sayısını güncelle
+        function updateOnlineCount() {
+            fetch('/api/online-users?t=' + Date.now(), {
+                method: 'GET',
+                cache: 'no-store'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const onlineEl = document.getElementById('onlineUsers');
+                if (onlineEl && data.count !== undefined) {
+                    onlineEl.textContent = data.count;
+                    console.log('👥 Online kullanıcı sayısı:', data.count);
+                }
+            })
+            .catch(error => {
+                console.error('Online users error:', error);
+            });
+        }
+        
+        // Sayfa yüklendiğinde hemen heartbeat gönder
+        pingHeartbeat();
+        updateOnlineCount();
+        
+        // Her 5 saniyede bir heartbeat gönder
+        setInterval(pingHeartbeat, 5000);
+        
+        // Her 10 saniyede bir online sayısını güncelle
+        setInterval(updateOnlineCount, 10000);
+        
+        console.log('✅ Heartbeat sistemi aktif - Her 5 saniyede bir istek gönderilecek');
+    })();
+    </script>
 </body>
 </html>
 
