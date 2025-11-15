@@ -19,7 +19,7 @@ async function connectToDatabase() {
     });
 
     await client.connect();
-    const db = client.db(process.env.MONGODB_DB || 'mediamarkt');
+    const db = client.db(process.env.MONGODB_DB || 'toki');
 
     cachedClient = client;
     cachedDb = db;
@@ -28,5 +28,3 @@ async function connectToDatabase() {
 }
 
 module.exports = { connectToDatabase };
-
-export default connectToDatabase;

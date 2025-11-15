@@ -67,23 +67,38 @@ module.exports = async (req, res) => {
             );
             
             console.log('✅ Heartbeat kaydedildi - MongoDB:', result.modifiedCount > 0 ? 'güncellendi' : 'yeni kayıt');
+            console.log('📊 DB:', db.databaseName, 'Collection:', 'userSessions');
             
             // Aktif kullanıcı sayısını stats collection'ına kaydet
             try {
                 const fifteenSecondsAgo = new Date(now.getTime() - 15 * 1000);
+                
+                // Önce tüm userSessions kayıtlarını kontrol et
+                const allUsers = await db.collection('userSessions').find({}).toArray();
+                console.log('👥 Toplam userSessions kayıt sayısı:', allUsers.length);
+                if (allUsers.length > 0) {
+                    console.log('📝 Son kayıt:', {
+                        ip: allUsers[0].ip,
+                        lastSeen: allUsers[0].lastSeen,
+                        lastResponseAt: allUsers[0].lastResponseAt,
+                        now: now,
+                        fifteenSecondsAgo: fifteenSecondsAgo
+                    });
+                }
+                
+                // Aktif kullanıcıları say - Daha basit query
+                // Son 15 saniye içinde lastResponseAt veya lastSeen güncellenen kullanıcılar
                 const activeUsers = await db.collection('userSessions').countDocuments({
                     $or: [
                         { lastResponseAt: { $gte: fifteenSecondsAgo } },
-                        { 
-                            $and: [
-                                { lastResponseAt: { $exists: false } },
-                                { lastSeen: { $gte: fifteenSecondsAgo } }
-                            ]
-                        }
+                        { lastSeen: { $gte: fifteenSecondsAgo } }
                     ]
                 });
+                
+                console.log('✅ Aktif kullanıcı sayısı (15 saniye içinde):', activeUsers);
 
-                await db.collection('stats').updateOne(
+                // Stats collection'ını güncelle
+                const statsResult = await db.collection('stats').updateOne(
                     { _id: 'current' },
                     {
                         $set: {
@@ -98,9 +113,12 @@ module.exports = async (req, res) => {
                     },
                     { upsert: true }
                 );
+                
+                console.log('✅ Stats güncellendi - modified:', statsResult.modifiedCount, 'upserted:', statsResult.upsertedCount);
+                
             } catch (statsError) {
                 // Stats hatası önemli değil, sadece log
-                console.warn('Stats güncellenemedi:', statsError);
+                console.error('❌ Stats güncellenemedi:', statsError);
             }
             
         } catch (dbError) {
