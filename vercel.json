@@ -1,12 +1,4 @@
 {
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node"
-    },
-    "mardinlee/api/**/*.js": {
-      "runtime": "@vercel/node"
-    }
-  },
   "rewrites": [
     {
       "source": "/admin",
