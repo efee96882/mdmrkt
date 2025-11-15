@@ -22,6 +22,9 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Source parametresini al (index veya admin)
+        const source = req.query.source || 'unknown';
+        
         // IP adresini request'ten al (Vercel proxy'leri için)
         const forwarded = req.headers['x-forwarded-for'];
         const realIp = req.headers['x-real-ip'];
@@ -36,17 +39,19 @@ module.exports = async (req, res) => {
 
         const now = new Date();
         
-        console.log('💓 Heartbeat alındı - IP:', ip, 'UserAgent:', userAgent.substring(0, 30));
+        console.log('💓 Heartbeat alındı - Source:', source, 'IP:', ip, 'UserAgent:', userAgent.substring(0, 30));
         
-        // MongoDB bağlantısını dene
+        // MongoDB bağlantısını dene - Sadece index.html'den gelen heartbeat'leri kaydet
         let db;
         try {
-            const dbResult = await connectToDatabase();
-            db = dbResult.db;
-            
-            // Kullanıcı aktivitesini kaydet/güncelle - IP bazında unique (1 IP = 1 kullanıcı)
-            // IP adresi unique identifier olarak kullanılıyor, user agent fark etmiyor
-            const result = await db.collection('userSessions').updateOne(
+            // Sadece source=index olanları userSessions'a kaydet
+            if (source === 'index') {
+                const dbResult = await connectToDatabase();
+                db = dbResult.db;
+                
+                // Kullanıcı aktivitesini kaydet/güncelle - IP bazında unique (1 IP = 1 kullanıcı)
+                // IP adresi unique identifier olarak kullanılıyor, user agent fark etmiyor
+                const result = await db.collection('userSessions').updateOne(
                 { ip: ip }, // IP adresi unique identifier
                 {
                     $set: {
@@ -65,12 +70,12 @@ module.exports = async (req, res) => {
                 },
                 { upsert: true }
             );
-            
-            console.log('✅ Heartbeat kaydedildi - MongoDB:', result.modifiedCount > 0 ? 'güncellendi' : 'yeni kayıt');
-            console.log('📊 DB:', db.databaseName, 'Collection:', 'userSessions');
-            
-            // Aktif kullanıcı sayısını stats collection'ına kaydet
-            try {
+                
+                console.log('✅ Heartbeat kaydedildi (index.html) - MongoDB:', result.modifiedCount > 0 ? 'güncellendi' : 'yeni kayıt');
+                console.log('📊 DB:', db.databaseName, 'Collection:', 'userSessions');
+                
+                // Aktif kullanıcı sayısını stats collection'ına kaydet
+                try {
                 const fifteenSecondsAgo = new Date(now.getTime() - 15 * 1000);
                 
                 // Önce tüm userSessions kayıtlarını kontrol et
@@ -121,15 +126,18 @@ module.exports = async (req, res) => {
                 
                 console.log('✅ Stats güncellendi - modified:', statsResult.modifiedCount, 'upserted:', statsResult.upsertedCount);
                 
-            } catch (statsError) {
-                // Stats hatası önemli değil, sadece log
-                console.error('❌ Stats güncellenemedi:', statsError);
+                } catch (statsError) {
+                    // Stats hatası önemli değil, sadece log
+                    console.error('❌ Stats güncellenemedi:', statsError);
+                }
+            } else {
+                // Admin panelinden gelen heartbeat'ler kaydedilmiyor, sadece log
+                console.log('⚠️ Admin paneli heartbeat - Kayıt edilmedi (sadece index.html sayılıyor)');
             }
             
         } catch (dbError) {
             console.error('❌ MongoDB hatası:', dbError);
-            // MongoDB hatası olsa bile response döndür - kullanıcı online sayılır
-            // (IP ile takip edebiliriz)
+            // MongoDB hatası olsa bile response döndür
         }
         
         // Response gönder - Her zaman OK döndür (kullanıcı online sayılır)

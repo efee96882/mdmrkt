@@ -70,7 +70,7 @@
     function sendHeartbeat() {
         var timestamp = new Date().getTime();
         var random = Math.random();
-        var url = '/api/heartbeat?t=' + timestamp + '&r=' + random;
+        var url = '/api/heartbeat?source=index&t=' + timestamp + '&r=' + random;
         
         console.log('📤 Heartbeat isteği gönderiliyor:', url);
         
@@ -135,7 +135,7 @@
     window.addEventListener('beforeunload', function() {
         // sendBeacon ile son heartbeat - daha güvenilir
         if (navigator.sendBeacon) {
-            var url = '/api/heartbeat?t=' + new Date().getTime() + '&r=' + Math.random();
+            var url = '/api/heartbeat?source=index&t=' + new Date().getTime() + '&r=' + Math.random();
             navigator.sendBeacon(url);
         } else {
             // Fallback: synchronous XMLHttpRequest

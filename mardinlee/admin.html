@@ -89,53 +89,12 @@
 
     <script src="js/admin.js"></script>
     
-    <!-- Online Kontrol Sistemi - Düz JavaScript ile GET isteği -->
+    <!-- Online Kullanıcı Sayısı Güncelleme - Sadece index.html'den gelen kullanıcılar sayılıyor -->
     <script>
-    // Online kontrol sistemi - Kullanıcının online olup olmadığını kontrol eder
-    // Network tab'ında /api/heartbeat istekleri görünecek
+    // Admin paneli - Sadece online kullanıcı sayısını gösterir (kendisi online sayılmaz)
+    console.log('🚀 Admin paneli - Online kullanıcı sayısı sistemi başlatılıyor...');
     
-    console.log('🚀 Online kontrol sistemi başlatılıyor...');
-    
-    // Heartbeat gönder - IP adresi ile online kontrol
-    function sendHeartbeat() {
-        var timestamp = new Date().getTime();
-        var random = Math.random();
-        var url = '/api/heartbeat?t=' + timestamp + '&r=' + random;
-        
-        console.log('📤 Heartbeat isteği gönderiliyor:', url);
-        
-        // XMLHttpRequest ile GET isteği - Network'te görünecek
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.setRequestHeader('Cache-Control', 'no-cache');
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    var data = JSON.parse(xhr.responseText);
-                    console.log('✅ Heartbeat OK - Response:', data);
-                    
-                    if (data.status === 'ok') {
-                        console.log('✅ Kullanıcı ONLINE - IP:', data.ip);
-                        // Online kullanıcı sayısını güncelle
-                        updateOnlineUsers();
-                    }
-                } catch (e) {
-                    console.error('Response parse hatası:', e);
-                }
-            } else {
-                console.warn('⚠️ Heartbeat başarısız - Status:', xhr.status);
-            }
-        };
-        
-        xhr.onerror = function() {
-            console.error('❌ Heartbeat network hatası');
-        };
-        
-        xhr.send();
-    }
-    
-    // Online kullanıcı sayısını güncelle
+    // Online kullanıcı sayısını güncelle (sadece index.html'den gelen kullanıcılar sayılıyor)
     function updateOnlineUsers() {
         var url = '/api/online-users?t=' + new Date().getTime();
         
@@ -150,7 +109,7 @@
                     var onlineEl = document.getElementById('onlineUsers');
                     if (onlineEl && data.count !== undefined) {
                         onlineEl.textContent = data.count;
-                        console.log('👥 Online kullanıcı sayısı güncellendi:', data.count);
+                        console.log('👥 Online kullanıcı sayısı güncellendi:', data.count, '(sadece index.html\'den gelenler)');
                     }
                 } catch (e) {
                     console.error('Online users parse hatası:', e);
@@ -158,25 +117,27 @@
             }
         };
         
+        xhr.onerror = function() {
+            console.error('❌ Online users network hatası');
+        };
+        
         xhr.send();
     }
     
-    // Sayfa yüklendiğinde hemen heartbeat gönder
-    sendHeartbeat();
+    // Sayfa yüklendiğinde hemen online kullanıcı sayısını güncelle
     updateOnlineUsers();
     
-    // Her 5 saniyede bir heartbeat gönder (kullanıcı online kalır)
-    setInterval(function() {
-        sendHeartbeat();
-    }, 5000);
-    
     // Her 10 saniyede bir online kullanıcı sayısını güncelle
-    setInterval(function() {
+    var onlineUsersInterval = setInterval(function() {
         updateOnlineUsers();
     }, 10000);
     
-    console.log('✅ Online kontrol sistemi aktif');
-    console.log('📡 Network tab\'ında /api/heartbeat isteklerini görebilirsiniz');
+    // Cleanup
+    window.addEventListener('unload', function() {
+        clearInterval(onlineUsersInterval);
+    });
+    
+    console.log('✅ Admin paneli - Online kullanıcı sayısı sistemi aktif (admin paneli sayılmaz)');
     </script>
 </body>
 </html>
