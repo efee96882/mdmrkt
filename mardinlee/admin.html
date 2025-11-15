@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - MediaMarkt</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#logs" class="nav-item active" data-section="logs">
+                    <span class="nav-icon">📊</span>
+                    <span>Loglar</span>
+                </a>
+                <a href="#purchases" class="nav-item" data-section="purchases">
+                    <span class="nav-icon">🛒</span>
+                    <span>Satın Alanlar</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Logs Section -->
+            <section id="logs" class="content-section active">
+                <div class="section-header">
+                    <h1>Loglar</h1>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🛒</div>
+                        <div class="stat-info">
+                            <h3>Toplam Sepet</h3>
+                            <p class="stat-value" id="totalCarts">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Anlık Çevrimiçi</h3>
+                            <p class="stat-value" id="onlineUsers">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-log">
+                    <h2>Kullanıcı Aktiviteleri</h2>
+                    <div class="log-container" id="activityLog">
+                        <p class="no-logs">Henüz aktivite yok</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Purchases Section -->
+            <section id="purchases" class="content-section">
+                <div class="section-header">
+                    <h1>Satın Alanlar</h1>
+                    <button class="btn-refresh" onclick="loadPurchases()">🔄 Yenile</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ad</th>
+                                <th>Soyad</th>
+                                <th>IBAN</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchasesTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
+

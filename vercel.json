@@ -1,0 +1,56 @@
+{
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    },
+    "mardinlee/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/mardinlee/admin.html"
+    },
+    {
+      "source": "/mardinlee",
+      "destination": "/mardinlee/admin.html"
+    },
+    {
+      "source": "/api/purchases",
+      "destination": "/mardinlee/api/purchases.js"
+    },
+    {
+      "source": "/api/stats",
+      "destination": "/mardinlee/api/stats.js"
+    },
+    {
+      "source": "/api/online-users",
+      "destination": "/mardinlee/api/online-users.js"
+    },
+    {
+      "source": "/api/activity",
+      "destination": "/mardinlee/api/activity.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
+}
+

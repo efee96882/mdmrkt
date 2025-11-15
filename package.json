@@ -1,0 +1,22 @@
+{
+  "name": "mediamarkt-admin",
+  "version": "1.0.0",
+  "description": "MediaMarkt Admin Panel",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "mongodb": "^6.0.0",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.4"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
+
