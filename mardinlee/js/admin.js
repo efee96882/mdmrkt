@@ -181,43 +181,36 @@ function getUserId() {
     return userId;
 }
 
-// Send Heartbeat - Kullanıcının online olduğunu bildirir (IP ve Browser ile)
-// Response gelirse kullanıcı online sayılır
+// Send Heartbeat - GET isteği ile IP adresi ile online kontrol
+// Network'ten görünür - Response gelirse kullanıcı online
 async function sendHeartbeat() {
     try {
-        const userId = getUserId();
-        const browserInfo = getBrowserFingerprint();
+        // GET isteği at - IP adresi otomatik olarak request'ten alınır
+        // Network tab'ında /api/heartbeat görünecek
+        const timestamp = Date.now();
+        const userAgent = encodeURIComponent(navigator.userAgent);
+        const heartbeatUrl = `/api/heartbeat?t=${timestamp}&ua=${userAgent}`;
         
-        const response = await fetch('/api/online-users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: userId,
-                userAgent: navigator.userAgent,
-                browserInfo: {
-                    language: navigator.language,
-                    platform: navigator.platform,
-                    screenWidth: screen.width,
-                    screenHeight: screen.height,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    fingerprint: browserInfo
-                }
-            }),
+        const response = await fetch(heartbeatUrl, {
+            method: 'GET',
             cache: 'no-cache',
-            keepalive: true
+            keepalive: true,
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
         });
         
-        // Response gelirse kullanıcı online sayılır
+        // Response gelirse kullanıcı online sayılır - OK dönerse online
         if (response && response.ok) {
             const data = await response.json();
-            console.log('✅ Heartbeat başarılı - Online:', new Date(data.timestamp).toLocaleTimeString('tr-TR'));
-            return true;
-        } else {
-            console.warn('⚠️ Heartbeat başarısız - Response:', response?.status);
-            return false;
+            if (data.status === 'ok') {
+                console.log('✅ Heartbeat OK - Online - IP:', data.ip, new Date(data.timestamp).toLocaleTimeString('tr-TR'));
+                return true;
+            }
         }
+        console.warn('⚠️ Heartbeat başarısız - Status:', response?.status);
+        return false;
     } catch (error) {
         console.error('❌ Heartbeat hatası:', error);
         return false;
