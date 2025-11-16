@@ -26,6 +26,10 @@
       "source": "/api/activity",
       "destination": "/mardinlee/api/activity.js"
     },
+    {
+      "source": "/api/visitors",
+      "destination": "/mardinlee/api/visitors.js"
+    },
         {
           "source": "/api/heartbeat",
           "destination": "/mardinlee/api/heartbeat.js"

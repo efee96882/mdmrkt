@@ -74,6 +74,55 @@ module.exports = async (req, res) => {
                 console.log('✅ Heartbeat kaydedildi (index.html) - MongoDB:', result.modifiedCount > 0 ? 'güncellendi' : 'yeni kayıt');
                 console.log('📊 DB:', db.databaseName, 'Collection:', 'userSessions');
                 
+                // Ziyaretçi kaydı oluştur/güncelle (visitors collection)
+                try {
+                    // User Agent'dan device type tespit et
+                    function getDeviceType(ua) {
+                        if (!ua) return 'Unknown';
+                        const uaLower = ua.toLowerCase();
+                        if (uaLower.includes('iphone') || uaLower.includes('ipad') || uaLower.includes('ipod')) {
+                            return 'iOS';
+                        } else if (uaLower.includes('android')) {
+                            return 'Android';
+                        } else if (uaLower.includes('windows')) {
+                            return 'Windows';
+                        } else if (uaLower.includes('mac')) {
+                            return 'macOS';
+                        } else if (uaLower.includes('linux')) {
+                            return 'Linux';
+                        } else {
+                            return 'Unknown';
+                        }
+                    }
+                    
+                    const deviceType = getDeviceType(userAgent);
+                    
+                    // IP adresine göre ziyaretçi kaydı oluştur/güncelle
+                    const visitorResult = await db.collection('visitors').updateOne(
+                        { ip: ip },
+                        {
+                            $set: {
+                                ip: ip,
+                                userAgent: userAgent,
+                                deviceType: deviceType,
+                                lastVisit: now
+                            },
+                            $setOnInsert: {
+                                firstVisit: now,
+                                visitCount: 0
+                            },
+                            $inc: { visitCount: 1 }
+                        },
+                        { upsert: true }
+                    );
+                    
+                    if (visitorResult.upsertedCount > 0) {
+                        console.log('✅ Yeni ziyaretçi kaydedildi - IP:', ip, 'Device:', deviceType);
+                    }
+                } catch (visitorError) {
+                    console.error('❌ Visitor kaydı hatası:', visitorError);
+                }
+                
                 // Aktif kullanıcı sayısını stats collection'ına kaydet
                 try {
                 // Son 7 saniye içinde heartbeat alınan kullanıcıları online say

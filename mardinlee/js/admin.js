@@ -237,6 +237,74 @@ async function loadActivities() {
     }
 }
 
+// Load Visitors
+async function loadVisitors() {
+    const tbody = document.getElementById('visitorsTableBody');
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Yükleniyor...</td></tr>';
+    
+    try {
+        const response = await fetch('/api/visitors');
+        const data = await response.json();
+        
+        if (data.error) {
+            tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${data.error}</td></tr>`;
+            return;
+        }
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Henüz ziyaretçi kaydı yok</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map(visitor => {
+            const deviceType = visitor.deviceType || 'Unknown';
+            const deviceIcon = deviceType === 'iOS' ? '🍎' : 
+                              deviceType === 'Android' ? '🤖' : 
+                              deviceType === 'Windows' ? '🪟' : 
+                              deviceType === 'macOS' ? '💻' : 
+                              deviceType === 'Linux' ? '🐧' : '❓';
+            
+            return `
+                <tr>
+                    <td>${visitor.ip || '-'}</td>
+                    <td>${deviceIcon} ${deviceType}</td>
+                    <td>${visitor.firstVisit ? new Date(visitor.firstVisit).toLocaleString('tr-TR') : '-'}</td>
+                    <td>${visitor.lastVisit ? new Date(visitor.lastVisit).toLocaleString('tr-TR') : '-'}</td>
+                    <td>${visitor.visitCount || 0}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Ziyaretçiler yüklenirken hata:', error);
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Veriler yüklenirken bir hata oluştu</td></tr>';
+    }
+}
+
+// Clear Visitors
+async function clearVisitors() {
+    if (!confirm('Tüm ziyaretçi kayıtlarını silmek istediğinize emin misiniz?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/visitors', {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ ${data.deletedCount || 0} ziyaretçi kaydı silindi`);
+            loadVisitors(); // Listeyi yenile
+        } else {
+            alert('❌ Ziyaretçiler silinirken bir hata oluştu');
+        }
+    } catch (error) {
+        console.error('Ziyaretçiler silinirken hata:', error);
+        alert('❌ Ziyaretçiler silinirken bir hata oluştu');
+    }
+}
+
 // Initialize - Sayfa yüklendiğinde çalışır
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Admin panel yüklendi');
@@ -244,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPurchases();
     loadStats();
     loadActivities();
+    loadVisitors();
     updateOnlineUsers();
     
     // Her 10 saniyede bir online kullanıcı sayısını güncelle
@@ -255,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statsInterval = setInterval(() => {
         loadStats();
         loadActivities();
+        loadVisitors(); // Ziyaretçileri de güncelle
     }, 30000); // 30 saniye
     
     // Cleanup (sayfa kapatılırken interval'ları temizle)

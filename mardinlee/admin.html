@@ -22,6 +22,10 @@
                     <span class="nav-icon">🛒</span>
                     <span>Satın Alanlar</span>
                 </a>
+                <a href="#visitors" class="nav-item" data-section="visitors">
+                    <span class="nav-icon">👥</span>
+                    <span>Ziyaretçiler</span>
+                </a>
             </nav>
         </aside>
 
@@ -77,6 +81,36 @@
                             </tr>
                         </thead>
                         <tbody id="purchasesTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Visitors Section -->
+            <section id="visitors" class="content-section">
+                <div class="section-header">
+                    <h1>Ziyaretçiler</h1>
+                    <div>
+                        <button class="btn-refresh" onclick="loadVisitors()">🔄 Yenile</button>
+                        <button class="btn-danger" onclick="clearVisitors()" style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">🗑️ Sıfırla</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>IP Adresi</th>
+                                <th>Cihaz</th>
+                                <th>İlk Ziyaret</th>
+                                <th>Son Ziyaret</th>
+                                <th>Ziyaret Sayısı</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitorsTableBody">
                             <tr>
                                 <td colspan="5" class="loading">Yükleniyor...</td>
                             </tr>
