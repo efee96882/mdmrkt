@@ -90,7 +90,16 @@
                 var realPrice = typeof p.realPrice === 'number' ? p.realPrice.toFixed(2) + ' €' : '';
                 var discountedPrice = typeof p.discountedPrice === 'number' ? p.discountedPrice.toFixed(2) + ' €' : '';
                 var discountPercent = typeof p.discountPercent === 'number' ? Math.round(p.discountPercent) : null;
-                var imageUrl = p.imageUrl || 'https://cms-images.mmst.eu/2rj3gcd43pmw/2xslVTe29DChwWBl7wq8if/6971ffc3da3db06f5758f71fcc563a7e/MMS_Logo_outline.svg?q=80';
+                // Her ürünün kendi resmi - phones.js'den veya products collection'ından gelir
+                var imageUrl = p.imageUrl || 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png';
+                
+                // Debug: Resim URL'sini kontrol et
+                if (!p.imageUrl) {
+                    console.warn('⚠️ Ürün resmi yok:', p.name || 'İsimsiz', '- Placeholder kullanılıyor');
+                } else {
+                    console.log('✅ Ürün resmi:', p.name || 'İsimsiz', '- URL:', imageUrl);
+                }
+                
                 var rating = typeof p.rating === 'number' ? p.rating : null;
                 var reviews = typeof p.reviews === 'number' ? p.reviews : 0;
 
@@ -113,7 +122,7 @@
                     '<div class="black-week-product-card" onclick="window.location.href=\'' + productLink + '\'" style="cursor: pointer;">' +
                         '<div class="black-week-badge">Black Week Deal</div>' +
                         '<div class="black-week-product-image-wrapper">' +
-                            '<img src="' + imageUrl + '" alt="Ürün görseli">' +
+                            '<img src="' + imageUrl + '" alt="' + (name || 'Ürün görseli') + '" onerror="this.src=\'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png\'">' +
                         '</div>' +
                         '<div class="black-week-product-name">' + name + '</div>' +
                         (rating != null ? '<div class="black-week-stars">' + renderStars(rating) + (reviews ? '<span class="black-week-reviews">' + reviews + '</span>' : '') + '</div>' : '') +
@@ -197,6 +206,12 @@
 
             // Phones en üstte (17, 16, 15 sırasıyla), sonra admin panel ürünleri
             var combined = phones.concat(products);
+            
+            // Her ürünün resim URL'sini kontrol et
+            combined.forEach(function(p, index) {
+                console.log('📸 Ürün ' + (index + 1) + ' - ' + (p.name || 'İsimsiz') + ' - Resim URL:', p.imageUrl || 'YOK');
+            });
+            
             renderBlackWeekProducts(combined);
         }).catch(function (err) {
             console.error('❌ Black Week listesi yüklenemedi (combined):', err);
