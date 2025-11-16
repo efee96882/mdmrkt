@@ -154,7 +154,31 @@
             console.log('📊 index phones:', phones);
             console.log('📊 index products:', products);
 
-            // Phones en üstte, sonra admin panel ürünleri
+            // iPhone ürünlerini sırala: 17, 16, 15
+            phones.sort(function(a, b) {
+                var nameA = (a.name || '').toLowerCase();
+                var nameB = (b.name || '').toLowerCase();
+                
+                // Öncelik sırası: 17 > 16 > 15 > diğerleri
+                function getPriority(name) {
+                    if (name.indexOf('iphone 17') !== -1) return 1;
+                    if (name.indexOf('iphone 16') !== -1) return 2;
+                    if (name.indexOf('iphone 15') !== -1) return 3;
+                    return 4;
+                }
+                
+                var priorityA = getPriority(nameA);
+                var priorityB = getPriority(nameB);
+                
+                if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                }
+                
+                // Aynı seri içinde alfabetik sıralama
+                return nameA.localeCompare(nameB);
+            });
+
+            // Phones en üstte (17, 16, 15 sırasıyla), sonra admin panel ürünleri
             var combined = phones.concat(products);
             renderBlackWeekProducts(combined);
         }).catch(function (err) {
