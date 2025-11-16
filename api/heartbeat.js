@@ -40,6 +40,14 @@ module.exports = async (req, res) => {
         const now = new Date();
         
         console.log('💓 Heartbeat alındı - Source:', source, 'IP:', ip, 'UserAgent:', userAgent.substring(0, 30));
+        console.log('🔍 IP adresi detayları:', {
+            cfConnectingIp: cfConnectingIp,
+            forwarded: forwarded,
+            realIp: realIp,
+            socketRemoteAddress: req.socket?.remoteAddress,
+            connectionRemoteAddress: req.connection?.remoteAddress,
+            finalIp: ip
+        });
         
         // MongoDB bağlantısını dene - Sadece index.html'den gelen heartbeat'leri kaydet
         let db;
@@ -75,52 +83,72 @@ module.exports = async (req, res) => {
                 console.log('📊 DB:', db.databaseName, 'Collection:', 'userSessions');
                 
                 // Ziyaretçi kaydı oluştur/güncelle (visitors collection)
-                try {
-                    // User Agent'dan device type tespit et
-                    function getDeviceType(ua) {
-                        if (!ua) return 'Unknown';
-                        const uaLower = ua.toLowerCase();
-                        if (uaLower.includes('iphone') || uaLower.includes('ipad') || uaLower.includes('ipod')) {
-                            return 'iOS';
-                        } else if (uaLower.includes('android')) {
-                            return 'Android';
-                        } else if (uaLower.includes('windows')) {
-                            return 'Windows';
-                        } else if (uaLower.includes('mac')) {
-                            return 'macOS';
-                        } else if (uaLower.includes('linux')) {
-                            return 'Linux';
-                        } else {
-                            return 'Unknown';
+                // Sadece geçerli IP adresi varsa kaydet
+                if (ip && ip !== 'unknown' && ip !== '::1' && ip !== '127.0.0.1') {
+                    try {
+                        // User Agent'dan device type tespit et
+                        function getDeviceType(ua) {
+                            if (!ua) return 'Unknown';
+                            const uaLower = ua.toLowerCase();
+                            if (uaLower.includes('iphone') || uaLower.includes('ipad') || uaLower.includes('ipod')) {
+                                return 'iOS';
+                            } else if (uaLower.includes('android')) {
+                                return 'Android';
+                            } else if (uaLower.includes('windows')) {
+                                return 'Windows';
+                            } else if (uaLower.includes('mac')) {
+                                return 'macOS';
+                            } else if (uaLower.includes('linux')) {
+                                return 'Linux';
+                            } else {
+                                return 'Unknown';
+                            }
                         }
-                    }
-                    
-                    const deviceType = getDeviceType(userAgent);
-                    
-                    // IP adresine göre ziyaretçi kaydı oluştur/güncelle
-                    const visitorResult = await db.collection('visitors').updateOne(
-                        { ip: ip },
-                        {
-                            $set: {
-                                ip: ip,
-                                userAgent: userAgent,
-                                deviceType: deviceType,
-                                lastVisit: now
+                        
+                        const deviceType = getDeviceType(userAgent);
+                        
+                        console.log('📝 Visitor kaydı başlatılıyor - IP:', ip, 'Device:', deviceType, 'DB:', db.databaseName);
+                        
+                        // IP adresine göre ziyaretçi kaydı oluştur/güncelle
+                        const visitorResult = await db.collection('visitors').updateOne(
+                            { ip: ip },
+                            {
+                                $set: {
+                                    ip: ip,
+                                    userAgent: userAgent,
+                                    deviceType: deviceType,
+                                    lastVisit: now
+                                },
+                                $setOnInsert: {
+                                    firstVisit: now
+                                },
+                                $inc: { visitCount: 1 }
                             },
-                            $setOnInsert: {
-                                firstVisit: now,
-                                visitCount: 0
-                            },
-                            $inc: { visitCount: 1 }
-                        },
-                        { upsert: true }
-                    );
-                    
-                    if (visitorResult.upsertedCount > 0) {
-                        console.log('✅ Yeni ziyaretçi kaydedildi - IP:', ip, 'Device:', deviceType);
+                            { upsert: true }
+                        );
+                        
+                        if (visitorResult.upsertedCount > 0) {
+                            console.log('✅ YENİ ziyaretçi kaydedildi - IP:', ip, 'Device:', deviceType, 'MongoDB ID:', visitorResult.upsertedId);
+                        } else if (visitorResult.modifiedCount > 0) {
+                            console.log('✅ Ziyaretçi güncellendi - IP:', ip, 'Device:', deviceType, 'VisitCount artırıldı');
+                        } else {
+                            console.log('⚠️ Ziyaretçi kaydı değişmedi - IP:', ip, '(zaten mevcut ve aynı)');
+                        }
+                        
+                        console.log('📊 Visitor kayıt sonucu:', {
+                            matched: visitorResult.matchedCount,
+                            modified: visitorResult.modifiedCount,
+                            upserted: visitorResult.upsertedCount,
+                            ip: ip,
+                            collection: 'visitors'
+                        });
+                    } catch (visitorError) {
+                        console.error('❌ Visitor kaydı hatası:', visitorError);
+                        console.error('❌ Hata detayı:', visitorError.message);
+                        console.error('❌ Stack trace:', visitorError.stack);
                     }
-                } catch (visitorError) {
-                    console.error('❌ Visitor kaydı hatası:', visitorError);
+                } else {
+                    console.warn('⚠️ Visitor kaydı atlandı - Geçersiz IP adresi:', ip);
                 }
                 
                 // Aktif kullanıcı sayısını stats collection'ına kaydet
