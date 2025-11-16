@@ -6,13 +6,13 @@ const DEFAULT_PHONE_MODELS = [
   // 17 serisi
   {
     family: 'iPhone 17 Pro Max',
-    baseName: 'APPLE iPhone 17 Pro Max 5G',
+    baseName: 'APPLE iPhone 17 Pro Max 5G 256 GB',
     imageUrl: './images/iphone-17-pro-max-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1599, discountedPrice: 1499 },
-      { storage: '512 GB', realPrice: 1799, discountedPrice: 1699 },
-      { storage: '1 TB', realPrice: 1999, discountedPrice: 1899 },
-      { storage: '2 TB', realPrice: 2299, discountedPrice: 2199 }
+      { storage: '256 GB', realPrice: 1894, discountedPrice: 1600 },
+      { storage: '512 GB', realPrice: 1999, discountedPrice: 1800 },
+      { storage: '1 TB', realPrice: 2199, discountedPrice: 1900 },
+      { storage: '2 TB', realPrice: 2300, discountedPrice: 2000 }
     ],
     rating: 4.9,
     reviews: 120,
@@ -23,24 +23,24 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 17 Pro 5G',
     imageUrl: './images/iphone-17-pro-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1499, discountedPrice: 1399 },
-      { storage: '512 GB', realPrice: 1699, discountedPrice: 1599 },
-      { storage: '1 TB', realPrice: 1899, discountedPrice: 1799 },
-      { storage: '2 TB', realPrice: 2199, discountedPrice: 2099 }
+      { storage: '256 GB', realPrice: 1710, discountedPrice: 1499 },
+      { storage: '512 GB', realPrice: 1899, discountedPrice: 1701 },
+      { storage: '1 TB', realPrice: 2000, discountedPrice: 1799 },
+      { storage: '2 TB', realPrice: 2199, discountedPrice: 1899 }
     ],
     rating: 4.8,
     reviews: 110,
     description: 'Pro‑Leistung im kompakten Format – A19 Pro Chip, ProMotion Display und eine starke Triple‑Kamera für Fotos und Videos auf Studio‑Niveau.'
   },
   {
-    family: 'iPhone 17 Air',
+    family: 'iPhone Air',
     baseName: 'APPLE iPhone 17 Air 5G',
     imageUrl: './images/iphone-17-air-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1299, discountedPrice: 1199 },
-      { storage: '512 GB', realPrice: 1499, discountedPrice: 1399 },
-      { storage: '1 TB', realPrice: 1699, discountedPrice: 1599 },
-      { storage: '2 TB', realPrice: 1899, discountedPrice: 1799 }
+      { storage: '256 GB', realPrice: 1199, discountedPrice: 899 },
+      { storage: '512 GB', realPrice: 1250, discountedPrice: 999 },
+      { storage: '1 TB', realPrice: 1324, discountedPrice: 1200 },
+      { storage: '2 TB', realPrice: 1499, discountedPrice: 1399 }
     ],
     rating: 4.7,
     reviews: 90,
@@ -51,10 +51,10 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 17 5G',
     imageUrl: './images/iphone-17-duz-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1199, discountedPrice: 1099 },
-      { storage: '512 GB', realPrice: 1399, discountedPrice: 1299 },
-      { storage: '1 TB', realPrice: 1599, discountedPrice: 1499 },
-      { storage: '2 TB', realPrice: 1799, discountedPrice: 1699 }
+      { storage: '256 GB', realPrice: 949, discountedPrice: 699 },
+      { storage: '512 GB', realPrice: 1099, discountedPrice: 899 },
+      { storage: '1 TB', realPrice: 1200, discountedPrice: 1000 },
+      { storage: '2 TB', realPrice: 1300, discountedPrice: 1100 }
     ],
     rating: 4.6,
     reviews: 80,
@@ -66,10 +66,10 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 16 Pro Max 5G',
     imageUrl: './images/iphone-16-pro-max-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1499, discountedPrice: 1399 },
-      { storage: '512 GB', realPrice: 1699, discountedPrice: 1599 },
-      { storage: '1 TB', realPrice: 1899, discountedPrice: 1799 },
-      { storage: '2 TB', realPrice: 2099, discountedPrice: 1999 }
+      { storage: '256 GB', realPrice: 1555, discountedPrice: 1299 },
+      { storage: '512 GB', realPrice: 1799, discountedPrice: 1499 },
+      { storage: '1 TB', realPrice: 1999, discountedPrice: 1699 },
+      { storage: '2 TB', realPrice: 2199, discountedPrice: 1799 }
     ],
     rating: 4.8,
     reviews: 150,
@@ -94,10 +94,10 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 16 5G',
     imageUrl: './images/iphone-16-duz-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1199, discountedPrice: 1099 },
-      { storage: '512 GB', realPrice: 1399, discountedPrice: 1299 },
-      { storage: '1 TB', realPrice: 1599, discountedPrice: 1499 },
-      { storage: '2 TB', realPrice: 1799, discountedPrice: 1699 }
+      { storage: '256 GB', realPrice: 849, discountedPrice: 699 },
+      { storage: '512 GB', realPrice: 1099, discountedPrice: 899 },
+      { storage: '1 TB', realPrice: 1199, discountedPrice: 1099 },
+      { storage: '2 TB', realPrice: 1299, discountedPrice: 1199 }
     ],
     rating: 4.5,
     reviews: 100,
@@ -107,12 +107,12 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 15 Pro Max',
     baseName: 'APPLE iPhone 15 Pro Max 5G',
-    imageUrl: './images/iphone-15-pro-max-Photoroom.png',
+    imageUrl: './images/iphone-15-pro-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1399, discountedPrice: 1299 },
-      { storage: '512 GB', realPrice: 1599, discountedPrice: 1499 },
-      { storage: '1 TB', realPrice: 1799, discountedPrice: 1699 },
-      { storage: '2 TB', realPrice: 1999, discountedPrice: 1899 }
+      { storage: '256 GB', realPrice: 947, discountedPrice: 699 },
+      { storage: '512 GB', realPrice: 1099, discountedPrice: 899 },
+      { storage: '1 TB', realPrice: 1199, discountedPrice: 1000 },
+      { storage: '2 TB', realPrice: 1300, discountedPrice: 1099 }
     ],
     rating: 4.7,
     reviews: 200,
@@ -123,10 +123,10 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 15 Pro 5G',
     imageUrl: './images/iphone-15-pro-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 1299, discountedPrice: 1199 },
-      { storage: '512 GB', realPrice: 1499, discountedPrice: 1399 },
-      { storage: '1 TB', realPrice: 1699, discountedPrice: 1599 },
-      { storage: '2 TB', realPrice: 1899, discountedPrice: 1799 }
+      { storage: '256 GB', realPrice: 775, discountedPrice: 599 },
+      { storage: '512 GB', realPrice: 800, discountedPrice: 699 },
+      { storage: '1 TB', realPrice: 899, discountedPrice: 799 },
+      { storage: '2 TB', realPrice: 1000, discountedPrice: 900 }
     ],
     rating: 4.7,
     reviews: 180,
@@ -137,10 +137,10 @@ const DEFAULT_PHONE_MODELS = [
     baseName: 'APPLE iPhone 15 5G',
     imageUrl: './images/iphone-15-duz-Photoroom.png',
     storageOptions: [
-      { storage: '256 GB', realPrice: 999, discountedPrice: 949 },
-      { storage: '512 GB', realPrice: 1199, discountedPrice: 1149 },
-      { storage: '1 TB', realPrice: 1399, discountedPrice: 1349 },
-      { storage: '2 TB', realPrice: 1599, discountedPrice: 1549 }
+      { storage: '256 GB', realPrice: 689, discountedPrice: 499 },
+      { storage: '512 GB', realPrice: 722, discountedPrice: 599 },
+      { storage: '1 TB', realPrice: 759, discountedPrice: 600 },
+      { storage: '2 TB', realPrice: 889, discountedPrice: 749 }
     ],
     rating: 4.6,
     reviews: 220,
