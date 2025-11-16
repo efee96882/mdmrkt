@@ -267,6 +267,16 @@ body {
   box-sizing: border-box;
 }
 
+/* Mobile: en sola yapıştır */
+@media (max-width: 751px) {
+  .black-week-highlights-section {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .black-week-highlights-header {
   display: flex;
   justify-content: space-between;
