@@ -7,6 +7,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 17 Pro Max',
     baseName: 'APPLE iPhone 17 Pro Max 5G',
+    imageUrl: 'https://www.actimag.biz/6521-large_default/iphone-17-pro.jpg',
     storageOptions: [
       { storage: '256 GB', realPrice: 1599, discountedPrice: 1499 },
       { storage: '512 GB', realPrice: 1799, discountedPrice: 1699 },
@@ -20,6 +21,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 17 Pro',
     baseName: 'APPLE iPhone 17 Pro 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1499, discountedPrice: 1399 },
       { storage: '512 GB', realPrice: 1699, discountedPrice: 1599 },
@@ -33,6 +35,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 17 Air',
     baseName: 'APPLE iPhone 17 Air 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1299, discountedPrice: 1199 },
       { storage: '512 GB', realPrice: 1499, discountedPrice: 1399 },
@@ -46,6 +49,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 17',
     baseName: 'APPLE iPhone 17 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1199, discountedPrice: 1099 },
       { storage: '512 GB', realPrice: 1399, discountedPrice: 1299 },
@@ -60,6 +64,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16 Pro Max',
     baseName: 'APPLE iPhone 16 Pro Max 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1499, discountedPrice: 1399 },
       { storage: '512 GB', realPrice: 1699, discountedPrice: 1599 },
@@ -73,6 +78,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16 Pro',
     baseName: 'APPLE iPhone 16 Pro 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1399, discountedPrice: 1299 },
       { storage: '512 GB', realPrice: 1599, discountedPrice: 1499 },
@@ -86,6 +92,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16',
     baseName: 'APPLE iPhone 16 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1199, discountedPrice: 1099 },
       { storage: '512 GB', realPrice: 1399, discountedPrice: 1299 },
@@ -100,6 +107,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 15 Pro Max',
     baseName: 'APPLE iPhone 15 Pro Max 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1399, discountedPrice: 1299 },
       { storage: '512 GB', realPrice: 1599, discountedPrice: 1499 },
@@ -113,6 +121,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 15 Pro',
     baseName: 'APPLE iPhone 15 Pro 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1299, discountedPrice: 1199 },
       { storage: '512 GB', realPrice: 1499, discountedPrice: 1399 },
@@ -126,6 +135,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 15',
     baseName: 'APPLE iPhone 15 5G',
+    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
     storageOptions: [
       { storage: '256 GB', realPrice: 999, discountedPrice: 949 },
       { storage: '512 GB', realPrice: 1199, discountedPrice: 1149 },
@@ -165,7 +175,7 @@ function toDoc(model) {
     realPrice, // En düşük fiyat (gösterim için)
     discountedPrice, // En düşük indirimli fiyat
     discountPercent,
-    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png', // placeholder
+    imageUrl: model.imageUrl || 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png', // Her telefona özel resim linki veya placeholder
     rating: model.rating,
     reviews: model.reviews,
     description: model.description,
