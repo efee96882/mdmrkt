@@ -318,6 +318,11 @@ async function clearVisitors() {
     }
 }
 
+// Global erişim için fonksiyonları window'a ekle (inline handler ihtimali için)
+window.loadPurchases = loadPurchases;
+window.loadVisitors = loadVisitors;
+window.clearVisitors = clearVisitors;
+
 // Initialize - Sayfa yüklendiğinde çalışır
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Admin panel yüklendi');
@@ -374,9 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStats();
     loadActivities();
     updateOnlineUsers();
-    
-    // İlk ziyaretçiler yükleme - logs section aktif olduğu için visitors'ı yükleme
-    // Sadece visitors section'ına tıklandığında yüklenecek
     
     // Her 10 saniyede bir online kullanıcı sayısını güncelle
     const onlineUsersInterval = setInterval(() => {
