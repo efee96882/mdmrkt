@@ -280,13 +280,34 @@ body {
 .black-week-highlights-section {
   width: 100%;
   margin: 32px 0 24px 0;
-  padding: 0 8px;
+  padding: 0;
   box-sizing: border-box;
+}
+
+/* Mobilde padding */
+@media (max-width: 767px) {
+  .black-week-highlights-section {
+    padding: 0 8px;
+  }
+}
+
+/* Desktop'ta sadece sağdan padding - ilk ürün en sola yapışsın */
+@media (min-width: 768px) {
+  .black-week-highlights-section {
+    padding: 0 16px 0 0;
+  }
 }
 
 .black-week-highlights-header {
   margin-bottom: 16px;
   padding: 0 8px;
+}
+
+/* Desktop'ta header padding */
+@media (min-width: 768px) {
+  .black-week-highlights-header {
+    padding: 0 16px 0 0;
+  }
 }
 
 .black-week-highlights-header h2 {
@@ -300,7 +321,7 @@ body {
   margin: 0;
 }
 
-/* Grid - Mobilde 2 sütun, Desktop'ta 6 sütun */
+/* Grid - Mobilde 2 sütun */
 .black-week-products-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -309,11 +330,35 @@ body {
   box-sizing: border-box;
 }
 
-/* Desktop'ta 6 sütun */
-@media (min-width: 768px) {
+/* Tablet - 4 sütun */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .black-week-products-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
+/* Desktop - 5 sütun */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .black-week-products-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+}
+
+/* Büyük Desktop - 6 sütun */
+@media (min-width: 1280px) and (max-width: 1599px) {
   .black-week-products-grid {
     grid-template-columns: repeat(6, 1fr);
-    gap: 15px;
+    gap: 8px;
+  }
+}
+
+/* Çok Büyük Desktop - 7 sütun */
+@media (min-width: 1600px) {
+  .black-week-products-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
   }
 }
 
