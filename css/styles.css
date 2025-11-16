@@ -267,13 +267,13 @@ body {
   box-sizing: border-box;
 }
 
-/* Mobile: en sola yapıştır */
+/* Mobile: en sola yapıştır ama grid için içeriden padding */
 @media (max-width: 751px) {
   .black-week-highlights-section {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
 
@@ -282,6 +282,15 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+/* Mobilde header padding'i */
+@media (max-width: 767px) {
+  .black-week-highlights-header {
+    padding: 0 8px;
+  }
 }
 
 .black-week-highlights-header h2 {
@@ -302,7 +311,19 @@ body {
 .black-week-products-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobilde gap küçült ve grid'i düzelt */
+@media (max-width: 767px) {
+  .black-week-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+  }
 }
 
 @media (min-width: 768px) {
@@ -310,6 +331,15 @@ body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
   }
+}
+
+/* Link wrapper - grid item olarak çalışması için */
+.black-week-products-grid > a {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 
 .black-week-product-card {
@@ -322,6 +352,16 @@ body {
   flex-direction: column;
   height: 100%;
   position: relative;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Mobilde card padding'i küçült */
+@media (max-width: 767px) {
+  .black-week-product-card {
+    padding: 6px;
+  }
 }
 
 .black-week-product-image-wrapper {
