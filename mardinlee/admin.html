@@ -101,12 +101,14 @@
                 </div>
 
                 <!-- Ürün Oluşturma Formu -->
-                <div class="form-grid" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 15px;">
+                <div class="form-grid" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-bottom: 15px;">
                     <input type="text" id="productNameInput" placeholder="Ürün Adı" />
                     <input type="number" id="realPriceInput" placeholder="Gerçek Fiyat" step="0.01" min="0" />
                     <input type="number" id="discountedPriceInput" placeholder="İndirimli Fiyat" step="0.01" min="0" />
                     <input type="number" id="discountPercentInput" placeholder="İndirim Yüzdesi (%)" step="0.01" min="0" max="100" />
                     <input type="text" id="productImageInput" placeholder="Ürün Resmi (Link Formatı)" />
+                    <input type="number" id="productRatingInput" placeholder="Yıldız (0-5)" step="0.1" min="0" max="5" />
+                    <input type="number" id="productReviewsInput" placeholder="Toplam Yorum" step="1" min="0" />
                 </div>
 
                 <div style="margin-bottom: 20px;">

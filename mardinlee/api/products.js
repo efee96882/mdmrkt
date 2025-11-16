@@ -41,7 +41,9 @@ module.exports = async (req, res) => {
                 realPrice,
                 discountedPrice,
                 discountPercent,
-                imageUrl
+                imageUrl,
+                rating,
+                reviews
             } = req.body || {};
 
             if (!name || realPrice == null || discountedPrice == null) {
@@ -77,6 +79,8 @@ module.exports = async (req, res) => {
                 discountedPrice: numericDiscountedPrice,
                 discountPercent: numericDiscountPercent,
                 imageUrl: imageUrl ? String(imageUrl) : '',
+                rating: rating != null && !Number.isNaN(parseFloat(rating)) ? parseFloat(rating) : null,
+                reviews: reviews != null && !Number.isNaN(parseInt(reviews, 10)) ? parseInt(reviews, 10) : 0,
                 category: '-',
                 isActive: true,
                 createdAt: now,

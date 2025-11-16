@@ -284,8 +284,10 @@ function addProductFromForm() {
     const discountedPriceEl = document.getElementById('discountedPriceInput');
     const discountPercentEl = document.getElementById('discountPercentInput');
     const imageEl = document.getElementById('productImageInput');
+    const ratingEl = document.getElementById('productRatingInput');
+    const reviewsEl = document.getElementById('productReviewsInput');
 
-    if (!nameEl || !realPriceEl || !discountedPriceEl || !discountPercentEl || !imageEl) {
+    if (!nameEl || !realPriceEl || !discountedPriceEl || !discountPercentEl || !imageEl || !ratingEl || !reviewsEl) {
         console.error('❌ Ürün form elemanları bulunamadı');
         return;
     }
@@ -295,6 +297,8 @@ function addProductFromForm() {
     const discountedPrice = parseFloat(discountedPriceEl.value);
     let discountPercent = parseFloat(discountPercentEl.value);
     const imageUrl = imageEl.value.trim();
+    const rating = parseFloat(ratingEl.value);
+    const reviews = parseInt(reviewsEl.value, 10);
 
     if (!name || isNaN(realPrice) || isNaN(discountedPrice)) {
         alert('Lütfen ürün adı, gerçek fiyat ve indirimli fiyat alanlarını doldurun');
@@ -316,6 +320,8 @@ function addProductFromForm() {
         discountedPrice,
         discountPercent,
         imageUrl,
+        rating: isNaN(rating) ? null : rating,
+        reviews: isNaN(reviews) ? 0 : reviews,
         category: '-' // Şimdilik sabit, sonra kategori alanı eklenebilir
     };
 
@@ -344,6 +350,8 @@ function addProductFromForm() {
         discountedPriceEl.value = '';
         discountPercentEl.value = '';
         imageEl.value = '';
+        ratingEl.value = '';
+        reviewsEl.value = '';
 
         // Listeleri tekrar yükle
         loadProducts();

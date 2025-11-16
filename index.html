@@ -91,17 +91,34 @@
                 var discountedPrice = typeof p.discountedPrice === 'number' ? p.discountedPrice.toFixed(2) + ' €' : '';
                 var discountPercent = typeof p.discountPercent === 'number' ? Math.round(p.discountPercent) : null;
                 var imageUrl = p.imageUrl || 'https://cms-images.mmst.eu/2rj3gcd43pmw/2xslVTe29DChwWBl7wq8if/6971ffc3da3db06f5758f71fcc563a7e/MMS_Logo_outline.svg?q=80';
+                var rating = typeof p.rating === 'number' ? p.rating : null;
+                var reviews = typeof p.reviews === 'number' ? p.reviews : 0;
+
+                function renderStars(r) {
+                    if (r == null) return '';
+                    var full = Math.floor(r);
+                    var half = r - full >= 0.5 ? 1 : 0;
+                    var empty = 5 - full - half;
+                    var stars = '';
+                    for (var i = 0; i < full; i++) stars += '<span class="black-week-star">★</span>';
+                    if (half) stars += '<span class="black-week-star">☆</span>';
+                    for (var j = 0; j < empty; j++) stars += '<span class="black-week-star gray">★</span>';
+                    return stars;
+                }
 
                 return (
                     '<div class="black-week-product-card">' +
+                        '<div class="black-week-badge">Black Week Deal</div>' +
                         '<div class="black-week-product-image-wrapper">' +
                             '<img src="' + imageUrl + '" alt="Ürün görseli">' +
                         '</div>' +
                         '<div class="black-week-product-name">' + name + '</div>' +
+                        (rating != null ? '<div class="black-week-stars">' + renderStars(rating) + (reviews ? '<span class="black-week-reviews">' + reviews + '</span>' : '') + '</div>' : '') +
                         '<div class="black-week-product-prices">' +
-                            (realPrice ? '<div class="black-week-product-real-price">' + realPrice + '</div>' : '') +
-                            (discountedPrice ? '<div class="black-week-product-discounted-price">' + discountedPrice + '</div>' : '') +
                             (discountPercent !== null ? '<span class="black-week-product-discount-badge">-' + discountPercent + '%</span>' : '') +
+                            (realPrice ? '<span class="black-week-product-uvp">UVP ' + realPrice + '</span>' : '') +
+                            (discountedPrice ? '<div class="black-week-product-discounted-price">' + discountedPrice + '</div>' : '') +
+                            '<a href="#" class="black-week-product-shipping">inkl. MwSt. versandkostenfrei</a>' +
                         '</div>' +
                     '</div>'
                 );
