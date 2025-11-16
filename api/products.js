@@ -43,7 +43,9 @@ module.exports = async (req, res) => {
                 discountPercent,
                 imageUrl,
                 rating,
-                reviews
+                reviews,
+                datasheetEnabled,
+                energyClass
             } = req.body || {};
 
             if (!name || realPrice == null || discountedPrice == null) {
@@ -79,6 +81,8 @@ module.exports = async (req, res) => {
                 discountedPrice: numericDiscountedPrice,
                 discountPercent: numericDiscountPercent,
                 imageUrl: imageUrl ? String(imageUrl) : '',
+                datasheetEnabled: !!datasheetEnabled,
+                energyClass: energyClass ? String(energyClass) : 'A',
                 rating: rating != null && !Number.isNaN(parseFloat(rating)) ? parseFloat(rating) : null,
                 reviews: reviews != null && !Number.isNaN(parseInt(reviews, 10)) ? parseInt(reviews, 10) : 0,
                 category: '-',

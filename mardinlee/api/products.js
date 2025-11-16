@@ -129,6 +129,8 @@ module.exports = async (req, res) => {
                 imageUrl,
                 rating,
                 reviews,
+                datasheetEnabled,
+                energyClass,
                 isActive
             } = req.body || {};
 
@@ -145,6 +147,8 @@ module.exports = async (req, res) => {
             if (imageUrl != null) update.$set.imageUrl = String(imageUrl);
             if (rating != null && !Number.isNaN(parseFloat(rating))) update.$set.rating = parseFloat(rating);
             if (reviews != null && !Number.isNaN(parseInt(reviews, 10))) update.$set.reviews = parseInt(reviews, 10);
+            if (datasheetEnabled != null) update.$set.datasheetEnabled = !!datasheetEnabled;
+            if (energyClass != null) update.$set.energyClass = String(energyClass || 'A');
             if (isActive != null) update.$set.isActive = !!isActive;
 
             const result = await db.collection('products').updateOne(

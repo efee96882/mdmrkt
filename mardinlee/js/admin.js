@@ -386,6 +386,41 @@ function addProductFromForm() {
     });
 }
 
+// Edit / Delete helpers
+window.editProduct = function(id) {
+    const p = products.find(x => x._id === id);
+    if (!p) return;
+    document.getElementById('productNameInput').value = p.name || '';
+    document.getElementById('realPriceInput').value = p.realPrice != null ? p.realPrice : '';
+    document.getElementById('discountedPriceInput').value = p.discountedPrice != null ? p.discountedPrice : '';
+    document.getElementById('discountPercentInput').value = p.discountPercent != null ? p.discountPercent : '';
+    document.getElementById('productImageInput').value = p.imageUrl || '';
+    document.getElementById('productRatingInput').value = p.rating != null ? p.rating : '';
+    document.getElementById('productReviewsInput').value = p.reviews != null ? p.reviews : '';
+    const datasheetEl = document.getElementById('productDatasheetEnabled');
+    if (datasheetEl) datasheetEl.checked = !!p.datasheetEnabled;
+    const energyClassEl = document.getElementById('productEnergyClass');
+    if (energyClassEl) energyClassEl.value = p.energyClass || 'A';
+    editingProductId = id;
+    const btn = document.getElementById('btnAddProduct');
+    if (btn) btn.textContent = '💾 Kaydet';
+    const cancelBtn = document.getElementById('btnCancelEdit');
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+};
+
+window.deleteProduct = function(id) {
+    if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
+    fetch(`/api/products?id=${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) throw new Error('Silinemedi');
+            loadProducts();
+        })
+        .catch(err => {
+            console.error('Silme hatası:', err);
+            alert('❌ Ürün silinemedi');
+        });
+};
 // Load Visitors
 async function loadVisitors() {
     const tbody = document.getElementById('visitorsTableBody');
