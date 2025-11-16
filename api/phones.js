@@ -64,7 +64,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16 Pro Max',
     baseName: 'APPLE iPhone 16 Pro Max 5G',
-    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
+    imageUrl: './images/iphone-16-pro-max-Photoroom.png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1499, discountedPrice: 1399 },
       { storage: '512 GB', realPrice: 1699, discountedPrice: 1599 },
@@ -78,7 +78,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16 Pro',
     baseName: 'APPLE iPhone 16 Pro 5G',
-    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
+    imageUrl: './images/iphone-16-pro-Photoroom.png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1399, discountedPrice: 1299 },
       { storage: '512 GB', realPrice: 1599, discountedPrice: 1499 },
@@ -92,7 +92,7 @@ const DEFAULT_PHONE_MODELS = [
   {
     family: 'iPhone 16',
     baseName: 'APPLE iPhone 16 5G',
-    imageUrl: 'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png',
+    imageUrl: './images/iphone-16-duz-Photoroom.png',
     storageOptions: [
       { storage: '256 GB', realPrice: 1199, discountedPrice: 1099 },
       { storage: '512 GB', realPrice: 1399, discountedPrice: 1299 },
