@@ -278,31 +278,28 @@ body {
 /* ===== Black Week Highlights - Ürün Grid'i ===== */
 
 .black-week-highlights-section {
-  max-width: 100%;
-  margin: 32px auto 24px auto;
-  padding: 0 12px;
-  box-sizing: border-box;
   width: 100%;
-  overflow: hidden;
+  max-width: 100%;
+  margin: 32px 0 24px 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* Desktop'ta max-width sınırla */
-@media (min-width: 1200px) {
+/* Mobilde padding ekle */
+@media (max-width: 767px) {
   .black-week-highlights-section {
-    max-width: 1400px;
+    padding: 0 8px;
   }
 }
 
-/* Mobile: en sola yapıştır ama grid için içeriden padding */
-@media (max-width: 767px) {
+/* Desktop'ta merkezle ve max-width ekle */
+@media (min-width: 768px) {
   .black-week-highlights-section {
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 8px;
-    padding-right: 8px;
     max-width: 100%;
-    width: 100%;
-    overflow-x: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 16px;
   }
 }
 
@@ -310,33 +307,26 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   padding: 0 8px;
   box-sizing: border-box;
 }
 
-/* Mobilde header padding'i */
-@media (max-width: 767px) {
-  .black-week-highlights-header {
-    padding: 0 8px;
-  }
-}
-
 .black-week-highlights-header h2 {
-  /* Top-Marken başlığı ile aynı tipografi ve reset */
   all: unset;
   display: revert;
   box-sizing: border-box;
   margin: 0;
   word-break: normal;
   color: #ffffff;
-  font-size: 1.25rem;              /* 20px */
+  font-size: 1.25rem;
   line-height: calc(28/18);
   font-family: NotoSansDisplay, NotoSansDisplay-fallback, Arial, sans-serif;
   font-weight: 600;
   letter-spacing: 0;
 }
 
+/* Grid - Mobilde 2 sütun, Desktop'ta ekrana ne kadar sığıyorsa */
 .black-week-products-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -345,248 +335,51 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  align-items: start;
 }
 
-/* Mobilde kesinlikle 2 sütun - overflow önleme */
-@media (max-width: 767px) {
+/* Desktop'ta ekrana ne kadar sığıyorsa o kadar ürün - büyük ürünler */
+@media (min-width: 768px) {
   .black-week-products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
   }
 }
 
-/* Tablet - 3-4 sütun */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .black-week-products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    justify-items: stretch;
-  }
-}
-
-/* Desktop - Büyük ürünler, ekrana ne kadar sığıyorsa o kadar */
-@media (min-width: 1024px) {
-  .black-week-products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    justify-items: stretch;
-    max-width: 100%;
-  }
-}
-
-/* Büyük ekranlarda daha büyük ürünler */
-@media (min-width: 1400px) {
-  .black-week-products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 18px;
-  }
-}
-
-/* Link wrapper - grid item olarak çalışması için */
+/* Link wrapper */
 .black-week-products-grid > a {
   display: block;
-  min-width: 0;
   width: 100%;
-  max-width: 100%;
   text-decoration: none;
   color: inherit;
-  overflow: hidden;
 }
 
+/* Ürün kartı */
 .black-week-product-card {
   background: #000000;
   border: 1px solid #292929;
   border-radius: 10px;
-  padding: 8px;
+  padding: 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
-  min-width: 0;
   width: 100%;
-  max-width: 100%;
   overflow: hidden;
 }
 
-/* Mobilde card padding'i küçült */
-@media (max-width: 767px) {
+/* Desktop'ta daha fazla padding */
+@media (min-width: 768px) {
   .black-week-product-card {
-    padding: 6px;
-    min-width: 0;
-    max-width: 100%;
-  }
-  
-  .black-week-products-grid > a {
-    min-width: 0;
-    max-width: 100%;
+    padding: 16px;
   }
 }
 
-/* Desktop'ta card padding'i artır - daha büyük görünüm */
-@media (min-width: 1024px) {
-  .black-week-product-card {
-    padding: 12px;
-  }
-}
-
-/* Büyük ekranlarda daha fazla padding */
-@media (min-width: 1400px) {
-  .black-week-product-card {
-    padding: 14px;
-  }
-}
-
-.black-week-product-image-wrapper {
-  width: 100%;
-  max-width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 8px;
-  background: #111111;
-  box-sizing: border-box;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.black-week-product-image-wrapper img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  max-height: 100%;
-}
-
-/* Desktop'ta image wrapper margin'i artır */
-@media (min-width: 1024px) {
-  .black-week-product-image-wrapper {
-    margin-bottom: 12px;
-    min-height: 200px;
-  }
-}
-
-.black-week-product-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 4px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  line-height: 1.3;
-}
-
-/* Mobilde font boyutunu küçült */
-@media (max-width: 767px) {
-  .black-week-product-name {
-    font-size: 12px;
-    line-height: 1.2;
-  }
-}
-
-/* Desktop'ta ürün ismi font boyutunu artır */
-@media (min-width: 1024px) {
-  .black-week-product-name {
-    font-size: 16px;
-    line-height: 1.4;
-    margin-bottom: 6px;
-  }
-}
-
-.black-week-product-prices {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 13px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* Mobilde fiyat font boyutunu küçült */
-@media (max-width: 767px) {
-  .black-week-product-prices {
-    font-size: 11px;
-  }
-}
-
-/* Desktop'ta fiyat font boyutunu artır */
-@media (min-width: 1024px) {
-  .black-week-product-prices {
-    font-size: 14px;
-    gap: 4px;
-  }
-}
-
-.black-week-product-real-price {
-  color: #b3b3b3;
-  text-decoration: line-through;
-}
-
-.black-week-product-discounted-price {
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* Mobilde indirimli fiyat font boyutunu küçült */
-@media (max-width: 767px) {
-  .black-week-product-discounted-price {
-    font-size: 13px;
-  }
-}
-
-/* Desktop'ta indirimli fiyat font boyutunu artır */
-@media (min-width: 1024px) {
-  .black-week-product-discounted-price {
-    font-size: 18px;
-    font-weight: 700;
-  }
-}
-
-.black-week-product-discount-badge {
-  display: inline-block;
-  background: #df0000;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 999px;
-  margin-top: 4px;
-}
-
-.black-week-product-uvp {
-  color: #b3b3b3;
-  text-decoration: line-through;
-  margin-left: 6px;
-}
-
-.black-week-product-uvp-raw {
-  color: #b3b3b3;
-  font-size: 12px;
-}
-
-.black-week-product-shipping {
-  color: #b3b3b3;
-  font-size: 12px;
-  text-decoration: underline;
-  margin-top: 6px;
-}
-
+/* Badge */
 .black-week-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   background: transparent;
   border: 1px solid #df0000;
   color: #ffffff;
@@ -594,18 +387,77 @@ body {
   padding: 4px 8px;
   border-radius: 8px;
   font-weight: 700;
+  z-index: 1;
 }
 
+@media (min-width: 768px) {
+  .black-week-badge {
+    top: 16px;
+    left: 16px;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
+/* Görsel wrapper - BÜYÜK ve düzgün */
+.black-week-product-image-wrapper {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #111111;
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 100%; /* 1:1 aspect ratio */
+}
+
+.black-week-product-image-wrapper img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Desktop'ta görsel daha büyük */
+@media (min-width: 768px) {
+  .black-week-product-image-wrapper {
+    margin-bottom: 16px;
+    padding-top: 100%; /* Kare görsel */
+  }
+}
+
+/* Ürün ismi */
+.black-week-product-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-name {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Yıldızlar */
 .black-week-stars {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin: 4px 0;
+  margin-bottom: 8px;
 }
 
 .black-week-star {
   color: #df0000;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1;
 }
 
@@ -619,6 +471,96 @@ body {
   margin-left: 6px;
 }
 
+@media (min-width: 768px) {
+  .black-week-star {
+    font-size: 18px;
+  }
+  .black-week-reviews {
+    font-size: 14px;
+  }
+}
+
+/* Fiyatlar */
+.black-week-product-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-prices {
+    font-size: 15px;
+    gap: 6px;
+  }
+}
+
+.black-week-product-discount-badge {
+  display: inline-block;
+  background: #df0000;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+  align-self: flex-start;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-discount-badge {
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+}
+
+.black-week-product-uvp {
+  color: #b3b3b3;
+  text-decoration: line-through;
+  font-size: 12px;
+}
+
+.black-week-product-uvp-raw {
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-uvp,
+  .black-week-product-uvp-raw {
+    font-size: 14px;
+  }
+}
+
+.black-week-product-discounted-price {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-discounted-price {
+    font-size: 24px;
+    margin-top: 6px;
+  }
+}
+
+.black-week-product-shipping {
+  color: #b3b3b3;
+  font-size: 11px;
+  text-decoration: underline;
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .black-week-product-shipping {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+}
+
+/* Datasheet ve enerji etiketi */
 .black-week-datasheet {
   color: #ffffff;
   text-decoration: underline;
@@ -639,15 +581,26 @@ body {
 }
 
 .energy-badge.energy-a {
-  background: #0b8a3b; /* yeşil */
+  background: #0b8a3b;
 }
 
+@media (min-width: 768px) {
+  .black-week-datasheet {
+    font-size: 14px;
+  }
+  .energy-badge {
+    font-size: 14px;
+    padding: 3px 8px;
+  }
+}
+
+/* Empty state */
 .black-week-products-empty {
   grid-column: 1 / -1;
   text-align: center;
   color: #b3b3b3;
-  font-size: 13px;
-  padding: 12px 0;
+  font-size: 14px;
+  padding: 24px 0;
 }
 
   /* Preferred box-sizing value */
