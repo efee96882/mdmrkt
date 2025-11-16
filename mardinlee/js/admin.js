@@ -1,30 +1,3 @@
-// Navigation - Heartbeat sistemi ile çalışıyor (Socket.io kaldırıldı)
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        const section = item.getAttribute('data-section');
-        
-        // Update active nav
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
-        
-        // Update active section
-        document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
-        
-        // Section'a göre veri yükle
-        if (section === 'visitors') {
-            loadVisitors();
-        } else if (section === 'purchases') {
-            loadPurchases();
-        } else if (section === 'logs') {
-            loadStats();
-            loadActivities();
-            updateOnlineUsers();
-        }
-    });
-});
-
 // Activity Log Functions
 function addActivityLog(data) {
     const logContainer = document.getElementById('activityLog');
@@ -349,11 +322,61 @@ async function clearVisitors() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Admin panel yüklendi');
     
+    // Navigation - Event listener'ları DOM hazır olduktan sonra ekle
+    console.log('📌 Navigation event listener\'lar ekleniyor...');
+    const navItems = document.querySelectorAll('.nav-item');
+    console.log('📌 Bulunan nav item sayısı:', navItems.length);
+    
+    navItems.forEach(item => {
+        const section = item.getAttribute('data-section');
+        console.log('📌 Nav item ekleniyor:', section);
+        
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('🖱️ Nav item tıklandı:', section);
+            
+            // Update active nav
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Update active section
+            const sectionElement = document.getElementById(section);
+            if (!sectionElement) {
+                console.error('❌ Section bulunamadı:', section);
+                return;
+            }
+            
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            sectionElement.classList.add('active');
+            
+            console.log('✅ Section aktif edildi:', section);
+            
+            // Section'a göre veri yükle
+            if (section === 'visitors') {
+                console.log('🔄 Ziyaretçiler yükleniyor (navigation)...');
+                loadVisitors();
+            } else if (section === 'purchases') {
+                console.log('🔄 Satın almalar yükleniyor (navigation)...');
+                loadPurchases();
+            } else if (section === 'logs') {
+                console.log('🔄 Loglar yükleniyor (navigation)...');
+                loadStats();
+                loadActivities();
+                updateOnlineUsers();
+            }
+        });
+    });
+    
+    console.log('✅ Navigation event listener\'lar eklendi');
+    
+    // İlk yükleme
     loadPurchases();
     loadStats();
     loadActivities();
-    loadVisitors();
     updateOnlineUsers();
+    
+    // İlk ziyaretçiler yükleme - logs section aktif olduğu için visitors'ı yükleme
+    // Sadece visitors section'ına tıklandığında yüklenecek
     
     // Her 10 saniyede bir online kullanıcı sayısını güncelle
     const onlineUsersInterval = setInterval(() => {
@@ -364,7 +387,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const statsInterval = setInterval(() => {
         loadStats();
         loadActivities();
-        loadVisitors(); // Ziyaretçileri de güncelle
+        // Aktif section'ı kontrol et, eğer visitors ise yenile
+        const activeSection = document.querySelector('.content-section.active');
+        if (activeSection && activeSection.id === 'visitors') {
+            loadVisitors();
+        }
     }, 30000); // 30 saniye
     
     // Cleanup (sayfa kapatılırken interval'ları temizle)
@@ -372,5 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(statsInterval);
         clearInterval(onlineUsersInterval);
     });
+    
+    console.log('✅ Admin panel başlatıldı');
 });
 
