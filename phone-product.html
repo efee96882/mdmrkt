@@ -2007,6 +2007,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       // Bilgileri içeren basit bir element oluştur
       var infoElement = document.createElement('div');
       infoElement.id = 'product-info-top';
+      infoElement.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; z-index: 99999; background: #fff; padding: 10px; white-space: pre-wrap; display: block;';
       
       // Bilgileri topla
       var infoText = '';
@@ -2032,12 +2033,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       // Text node olarak ekle
       infoElement.textContent = infoText;
       
-      // Body'nin en üstüne ekle
-      if (document.body.firstChild) {
-        document.body.insertBefore(infoElement, document.body.firstChild);
-      } else {
-        document.body.appendChild(infoElement);
-      }
+      // Body'ye ekle (en üste)
+      document.body.appendChild(infoElement);
       
       // Sayfayı en üste kaydır
       window.scrollTo({ top: 0, behavior: 'smooth' });
