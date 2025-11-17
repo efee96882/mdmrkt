@@ -1477,10 +1477,17 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         
         // Başlık ve meta bilgilerini güncelle
         if (phone.baseName) {
-          document.title = phone.baseName + ' | MediaMarkt';
+          var titleName = phone.baseName;
+          // Eğer storage seçeneği varsa başlığa ekle
+          var currentStorage = urlParams.get('storage');
+          if (currentStorage && phone.storageOptions) {
+            // Base name'den storage bilgisini kaldır (eğer varsa) ve yeni storage'ı ekle
+            titleName = phone.baseName.replace(/\s+\d+\s*(GB|TB)\s*/i, '').trim() + ' ' + currentStorage;
+          }
+          document.title = titleName + ' | MediaMarkt';
           var metaDesc = document.querySelector('meta[name="description"]');
           if (metaDesc) {
-            metaDesc.setAttribute('content', phone.description || phone.baseName + ' im Onlineshop von MediaMarkt kaufen.');
+            metaDesc.setAttribute('content', phone.description || titleName + ' im Onlineshop von MediaMarkt kaufen.');
           }
         }
         
@@ -1491,19 +1498,35 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
           // Şimdilik console'a yazdırıyoruz, sonra HTML'e entegre edilebilir
           console.log('💾 Storage seçenekleri:', phone.storageOptions);
           
-          // Örnek: Storage seçeneklerini bir div'e ekle
+          // Mevcut storage query parametresini al
+          var currentStorage = urlParams.get('storage');
+          
+          // Storage seçeneklerini bir div'e ekle
           var storageContainer = document.createElement('div');
           storageContainer.id = 'phone-storage-options';
           storageContainer.style.cssText = 'padding: 20px; background: #000; color: #fff; margin: 20px 0;';
           storageContainer.innerHTML = '<h3 style="color: #fff; margin-bottom: 15px;">Speicherkapazität wählen:</h3>' +
             phone.storageOptions.map(function(opt) {
-              return '<div style="padding: 10px; margin: 5px 0; border: 1px solid #333; cursor: pointer; border-radius: 5px;" ' +
-                     'onmouseover="this.style.borderColor=\'#f91f1f\'" ' +
-                     'onmouseout="this.style.borderColor=\'#333\'">' +
+              // İndirim yüzdesini hesapla
+              var discountPercent = opt.realPrice > 0 ? Math.round(((opt.realPrice - opt.discountedPrice) / opt.realPrice) * 100) : 0;
+              
+              // Mevcut storage seçeneği mi kontrol et
+              var isSelected = currentStorage === opt.storage;
+              var borderColor = isSelected ? '#f91f1f' : '#333';
+              var backgroundColor = isSelected ? '#1a1a1a' : 'transparent';
+              
+              // Storage seçeneğine tıklanınca query string ile yönlendir
+              var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage);
+              
+              return '<div style="padding: 10px; margin: 5px 0; border: 2px solid ' + borderColor + '; background: ' + backgroundColor + '; cursor: pointer; border-radius: 5px;" ' +
+                     'onclick="window.location.href=\'' + storageLink + '\'" ' +
+                     'onmouseover="if(!this.classList.contains(\'selected\')) this.style.borderColor=\'#f91f1f\'; this.style.backgroundColor=\'#1a1a1a\'" ' +
+                     'onmouseout="if(!this.classList.contains(\'selected\')) this.style.borderColor=\'#333\'; this.style.backgroundColor=\'' + backgroundColor + '\'" ' +
+                     (isSelected ? 'class="selected"' : '') + '>' +
                      '<strong>' + opt.storage + '</strong><br>' +
                      '<span style="text-decoration: line-through; color: #888;">UVP ' + opt.realPrice.toFixed(2) + ' €</span> ' +
                      '<span style="color: #f91f1f; font-size: 1.2em; font-weight: bold;">' + opt.discountedPrice.toFixed(2) + ' €</span> ' +
-                     '<span style="background: #f91f1f; padding: 2px 6px; border-radius: 3px; font-size: 0.9em;">-' + Math.round(opt.discountPercent) + '%</span>' +
+                     (discountPercent > 0 ? '<span style="background: #f91f1f; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; margin-left: 5px;">-' + discountPercent + '%</span>' : '') +
                      '</div>';
             }).join('');
           
