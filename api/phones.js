@@ -25,6 +25,12 @@ const DEFAULT_PHONE_MODELS = [
     family: 'iPhone 17 Pro',
     baseName: 'APPLE iPhone 17 Pro 5G',
     imageUrl: './images/iphone-17-pro-Photoroom.png',
+    colorOptions: [
+      { name: 'Natural Titanium', imageUrl: './images/iphone-17-pro-natural-titanium.png', colorCode: '#E5E4E2' },
+      { name: 'Blue Titanium', imageUrl: './images/iphone-17-pro-blue-titanium.png', colorCode: '#5F9EA0' },
+      { name: 'White Titanium', imageUrl: './images/iphone-17-pro-white-titanium.png', colorCode: '#F5F5F0' },
+      { name: 'Black Titanium', imageUrl: './images/iphone-17-pro-black-titanium.png', colorCode: '#1C1C1E' }
+    ],
     storageOptions: [
       { storage: '256 GB', realPrice: 1710, discountedPrice: 1399 },
       { storage: '512 GB', realPrice: 1899, discountedPrice: 1701 },
@@ -202,6 +208,7 @@ function toDoc(model) {
     baseName: model.baseName,
     slug: slug,
     storageOptions: storageOptions,
+    colorOptions: model.colorOptions || [], // Renk seçenekleri
     realPrice, // En düşük fiyat (gösterim için)
     discountedPrice, // En düşük indirimli fiyat
     discountPercent,

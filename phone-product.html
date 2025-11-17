@@ -1771,6 +1771,119 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
             }
           }
           
+          // Renk seçimi sistemi - sc-66506eb5-0 dzunfB elementinin altına ekle (ilk blok)
+          if (phone.colorOptions && phone.colorOptions.length > 0) {
+            // Mevcut renk seçimi container'ını kontrol et
+            var existingColorContainer = document.querySelector('[data-test="mms-pdp-variants-color"]') ||
+                                         document.querySelector('.mms-pdp-variants-color');
+            
+            if (!existingColorContainer) {
+              // Container yoksa oluştur
+              var colorContainer = document.createElement('div');
+              colorContainer.setAttribute('data-test', 'mms-pdp-variants-color');
+              colorContainer.className = 'mms-pdp-variants-color';
+              colorContainer.style.cssText = 'margin-top: 16px; margin-bottom: 16px; padding: 16px 0;';
+              
+              // Başlık ekle
+              var colorTitle = document.createElement('h3');
+              colorTitle.textContent = 'Farbe';
+              colorTitle.style.cssText = 'font-size: 1rem; font-weight: 600; margin: 0 0 12px 0; color: #000000; font-family: NotoSansDisplay, Arial, sans-serif;';
+              colorContainer.appendChild(colorTitle);
+              
+              // Renk seçenekleri container'ı
+              var colorOptionsWrapper = document.createElement('div');
+              colorOptionsWrapper.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center;';
+              
+              // Her renk için buton oluştur
+              phone.colorOptions.forEach(function(colorOption, index) {
+                var colorButton = document.createElement('button');
+                colorButton.type = 'button';
+                colorButton.setAttribute('data-color', colorOption.name);
+                colorButton.setAttribute('data-color-index', index);
+                colorButton.style.cssText = 'position: relative; border: 2px solid #e3e3e3; border-radius: 8px; padding: 8px; background: #ffffff; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 80px;';
+                
+                // Renk görseli
+                var colorImage = document.createElement('img');
+                colorImage.src = colorOption.imageUrl || phone.imageUrl;
+                colorImage.alt = colorOption.name;
+                colorImage.style.cssText = 'width: 60px; height: 60px; object-fit: contain; border-radius: 4px; display: block;';
+                colorButton.appendChild(colorImage);
+                
+                // Renk adı
+                var colorName = document.createElement('span');
+                colorName.textContent = colorOption.name;
+                colorName.style.cssText = 'font-size: 0.75rem; color: #3a3a3a; font-family: NotoSansDisplay, Arial, sans-serif; text-align: center;';
+                colorButton.appendChild(colorName);
+                
+                // İlk renk seçili olsun
+                if (index === 0) {
+                  colorButton.style.borderColor = '#105AB1';
+                  colorButton.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                }
+                
+                // Tıklama eventi
+                colorButton.addEventListener('click', function() {
+                  // Tüm butonlardan seçili stilini kaldır
+                  colorOptionsWrapper.querySelectorAll('button').forEach(function(btn) {
+                    btn.style.borderColor = '#e3e3e3';
+                    btn.style.boxShadow = 'none';
+                  });
+                  
+                  // Tıklanan butonu seçili yap
+                  this.style.borderColor = '#105AB1';
+                  this.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                  
+                  // Ana görseli güncelle
+                  var mainImage = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image') ||
+                                  document.querySelector('.pdp-gallery-image.sc-68628bc4-1.kDrCpj') ||
+                                  document.querySelector('.sc-68628bc4-1.kDrCpj') ||
+                                  document.querySelector('.pdp-gallery-image');
+                  
+                  if (mainImage) {
+                    var mainImg = mainImage.tagName === 'IMG' ? mainImage : mainImage.querySelector('img');
+                    if (mainImg) {
+                      mainImg.src = colorOption.imageUrl;
+                      console.log('✅ Ana görsel renk ile güncellendi:', colorOption.name);
+                    }
+                  }
+                  
+                  console.log('✅ Renk seçildi:', colorOption.name);
+                });
+                
+                // Hover efekti
+                colorButton.addEventListener('mouseenter', function() {
+                  if (this.style.borderColor !== 'rgb(16, 90, 177)') {
+                    this.style.borderColor = '#cccccc';
+                  }
+                });
+                colorButton.addEventListener('mouseleave', function() {
+                  if (this.style.borderColor !== 'rgb(16, 90, 177)') {
+                    this.style.borderColor = '#e3e3e3';
+                  }
+                });
+                
+                colorOptionsWrapper.appendChild(colorButton);
+              });
+              
+              colorContainer.appendChild(colorOptionsWrapper);
+              
+              // sc-66506eb5-0 dzunfB elementinin altına ekle
+              if (descriptionElement && descriptionElement.parentElement) {
+                descriptionElement.parentElement.insertBefore(colorContainer, descriptionElement.nextSibling);
+                console.log('✅ Renk seçimi sistemi eklendi (ilk blok):', phone.colorOptions.length, 'renk');
+              } else {
+                // Eğer parent bulunamazsa, description element'in kendisinden sonra ekle
+                if (descriptionElement) {
+                  descriptionElement.insertAdjacentElement('afterend', colorContainer);
+                  console.log('✅ Renk seçimi sistemi eklendi (ilk blok, afterend):', phone.colorOptions.length, 'renk');
+                }
+              }
+            } else {
+              // Container varsa, renkleri güncelle
+              console.log('✅ Renk seçimi container zaten mevcut (ilk blok)');
+            }
+          }
+          
           // Ürün ismi - sc-94eb08bc-0 dPxwlD elementini bul ve güncelle
           var productNameElement = document.querySelector('.sc-94eb08bc-0.dPxwlD');
           if (productNameElement) {
@@ -1917,6 +2030,119 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
           } else {
             descriptionElement.textContent = phone.description;
             console.log('✅ Description güncellendi (direkt):', phone.description);
+          }
+        }
+        
+        // Renk seçimi sistemi - sc-66506eb5-0 dzunfB elementinin altına ekle
+        if (phone.colorOptions && phone.colorOptions.length > 0) {
+          // Mevcut renk seçimi container'ını kontrol et
+          var existingColorContainer = document.querySelector('[data-test="mms-pdp-variants-color"]') ||
+                                       document.querySelector('.mms-pdp-variants-color');
+          
+          if (!existingColorContainer) {
+            // Container yoksa oluştur
+            var colorContainer = document.createElement('div');
+            colorContainer.setAttribute('data-test', 'mms-pdp-variants-color');
+            colorContainer.className = 'mms-pdp-variants-color';
+            colorContainer.style.cssText = 'margin-top: 16px; margin-bottom: 16px; padding: 16px 0;';
+            
+            // Başlık ekle
+            var colorTitle = document.createElement('h3');
+            colorTitle.textContent = 'Farbe';
+            colorTitle.style.cssText = 'font-size: 1rem; font-weight: 600; margin: 0 0 12px 0; color: #000000; font-family: NotoSansDisplay, Arial, sans-serif;';
+            colorContainer.appendChild(colorTitle);
+            
+            // Renk seçenekleri container'ı
+            var colorOptionsWrapper = document.createElement('div');
+            colorOptionsWrapper.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center;';
+            
+            // Her renk için buton oluştur
+            phone.colorOptions.forEach(function(colorOption, index) {
+              var colorButton = document.createElement('button');
+              colorButton.type = 'button';
+              colorButton.setAttribute('data-color', colorOption.name);
+              colorButton.setAttribute('data-color-index', index);
+              colorButton.style.cssText = 'position: relative; border: 2px solid #e3e3e3; border-radius: 8px; padding: 8px; background: #ffffff; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 80px;';
+              
+              // Renk görseli
+              var colorImage = document.createElement('img');
+              colorImage.src = colorOption.imageUrl || phone.imageUrl;
+              colorImage.alt = colorOption.name;
+              colorImage.style.cssText = 'width: 60px; height: 60px; object-fit: contain; border-radius: 4px; display: block;';
+              colorButton.appendChild(colorImage);
+              
+              // Renk adı
+              var colorName = document.createElement('span');
+              colorName.textContent = colorOption.name;
+              colorName.style.cssText = 'font-size: 0.75rem; color: #3a3a3a; font-family: NotoSansDisplay, Arial, sans-serif; text-align: center;';
+              colorButton.appendChild(colorName);
+              
+              // İlk renk seçili olsun
+              if (index === 0) {
+                colorButton.style.borderColor = '#105AB1';
+                colorButton.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+              }
+              
+              // Tıklama eventi
+              colorButton.addEventListener('click', function() {
+                // Tüm butonlardan seçili stilini kaldır
+                colorOptionsWrapper.querySelectorAll('button').forEach(function(btn) {
+                  btn.style.borderColor = '#e3e3e3';
+                  btn.style.boxShadow = 'none';
+                });
+                
+                // Tıklanan butonu seçili yap
+                this.style.borderColor = '#105AB1';
+                this.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                
+                // Ana görseli güncelle
+                var mainImage = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image') ||
+                                document.querySelector('.pdp-gallery-image.sc-68628bc4-1.kDrCpj') ||
+                                document.querySelector('.sc-68628bc4-1.kDrCpj') ||
+                                document.querySelector('.pdp-gallery-image');
+                
+                if (mainImage) {
+                  var mainImg = mainImage.tagName === 'IMG' ? mainImage : mainImage.querySelector('img');
+                  if (mainImg) {
+                    mainImg.src = colorOption.imageUrl;
+                    console.log('✅ Ana görsel renk ile güncellendi:', colorOption.name);
+                  }
+                }
+                
+                console.log('✅ Renk seçildi:', colorOption.name);
+              });
+              
+              // Hover efekti
+              colorButton.addEventListener('mouseenter', function() {
+                if (this.style.borderColor !== 'rgb(16, 90, 177)') {
+                  this.style.borderColor = '#cccccc';
+                }
+              });
+              colorButton.addEventListener('mouseleave', function() {
+                if (this.style.borderColor !== 'rgb(16, 90, 177)') {
+                  this.style.borderColor = '#e3e3e3';
+                }
+              });
+              
+              colorOptionsWrapper.appendChild(colorButton);
+            });
+            
+            colorContainer.appendChild(colorOptionsWrapper);
+            
+            // sc-66506eb5-0 dzunfB elementinin altına ekle
+            if (descriptionElement && descriptionElement.parentElement) {
+              descriptionElement.parentElement.insertBefore(colorContainer, descriptionElement.nextSibling);
+              console.log('✅ Renk seçimi sistemi eklendi:', phone.colorOptions.length, 'renk');
+            } else {
+              // Eğer parent bulunamazsa, description element'in kendisinden sonra ekle
+              if (descriptionElement) {
+                descriptionElement.insertAdjacentElement('afterend', colorContainer);
+                console.log('✅ Renk seçimi sistemi eklendi (afterend):', phone.colorOptions.length, 'renk');
+              }
+            }
+          } else {
+            // Container varsa, renkleri güncelle
+            console.log('✅ Renk seçimi container zaten mevcut');
           }
         }
         
