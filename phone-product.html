@@ -1832,6 +1832,17 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                   var priceText = Math.floor(discountedPrice).toString();
                   priceElement.textContent = priceText;
                   priceElement.innerText = priceText;
+                  
+                  // Aynı CSS stillerini uygula (sayfadaki diğer fiyatlar gibi)
+                  priceElement.style.fontFamily = 'MMPrice, Arial, sans-serif';
+                  priceElement.style.fontSize = 'inherit';
+                  priceElement.style.fontWeight = '400';
+                  priceElement.style.color = 'inherit';
+                  priceElement.style.lineHeight = 'inherit';
+                  priceElement.style.letterSpacing = 'normal';
+                  priceElement.style.margin = '0';
+                  priceElement.style.padding = '0';
+                  
                   console.log('✅ Discounted price güncellendi (ilk blok):', priceText, '(element:', priceElement, ')');
                   return true;
                 } else {
@@ -1951,6 +1962,17 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                 var priceText = Math.floor(discountedPrice).toString();
                 priceElement.textContent = priceText;
                 priceElement.innerText = priceText;
+                
+                // Aynı CSS stillerini uygula (sayfadaki diğer fiyatlar gibi)
+                priceElement.style.fontFamily = 'MMPrice, Arial, sans-serif';
+                priceElement.style.fontSize = 'inherit';
+                priceElement.style.fontWeight = '400';
+                priceElement.style.color = 'inherit';
+                priceElement.style.lineHeight = 'inherit';
+                priceElement.style.letterSpacing = 'normal';
+                priceElement.style.margin = '0';
+                priceElement.style.padding = '0';
+                
                 console.log('✅ Discounted price güncellendi:', priceText, '(element:', priceElement, ')');
                 return true;
               } else {
