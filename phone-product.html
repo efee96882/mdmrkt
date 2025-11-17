@@ -1457,6 +1457,29 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
+      position: relative !important;
+      z-index: 10000 !important;
+    }
+    
+    /* Parent element'lerin storage container'ı gizlemesini önle */
+    #root #phone-storage-options,
+    #mms-app-root #phone-storage-options,
+    body #phone-storage-options {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* Storage option item'ları görünür yap */
+    .storage-option-item {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    .storage-option-item:hover {
+      border-color: #f91f1f !important;
+      background-color: #1a1a1a !important;
     }
   </style>
 
@@ -1514,29 +1537,31 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
             var storageContainer = document.createElement('div');
             storageContainer.id = 'phone-storage-options';
             storageContainer.style.cssText = 'padding: 20px; background: #000; color: #fff; margin: 20px 0; position: relative; z-index: 10000; width: 100%; box-sizing: border-box; display: block !important; visibility: visible !important; opacity: 1 !important;';
-            storageContainer.innerHTML = '<h3 style="color: #fff; margin-bottom: 15px;">Speicherkapazität wählen:</h3>' +
-              phone.storageOptions.map(function(opt) {
-                // İndirim yüzdesini hesapla
-                var discountPercent = opt.realPrice > 0 ? Math.round(((opt.realPrice - opt.discountedPrice) / opt.realPrice) * 100) : 0;
-                
-                // Mevcut storage seçeneği mi kontrol et
-                var isSelected = currentStorage === opt.storage;
-                var borderColor = isSelected ? '#f91f1f' : '#333';
-                var backgroundColor = isSelected ? '#1a1a1a' : 'transparent';
-                
-                // Storage seçeneğine tıklanınca query string ile yönlendir
-                var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage);
-                
-                return '<div class="storage-option-item" data-storage-link="' + storageLink.replace(/"/g, '&quot;') + '" style="padding: 10px; margin: 5px 0; border: 2px solid ' + borderColor + '; background: ' + backgroundColor + '; cursor: pointer; border-radius: 5px;" ' +
-                       'onmouseover="if(!this.classList.contains(\'selected\')) this.style.borderColor=\'#f91f1f\'; this.style.backgroundColor=\'#1a1a1a\'" ' +
-                       'onmouseout="if(!this.classList.contains(\'selected\')) this.style.borderColor=\'#333\'; this.style.backgroundColor=\'' + backgroundColor + '\'" ' +
-                       (isSelected ? 'class="selected"' : '') + '>' +
-                       '<strong>' + opt.storage + '</strong><br>' +
-                       '<span style="text-decoration: line-through; color: #888;">UVP ' + opt.realPrice.toFixed(2) + ' €</span> ' +
-                       '<span style="color: #f91f1f; font-size: 1.2em; font-weight: bold;">' + opt.discountedPrice.toFixed(2) + ' €</span> ' +
-                       (discountPercent > 0 ? '<span style="background: #f91f1f; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; margin-left: 5px;">-' + discountPercent + '%</span>' : '') +
-                       '</div>';
-              }).join('');
+            // Storage seçeneklerini direkt <a> tag'leri ile oluştur (daha güvenilir)
+            var storageHTML = '<h3 style="color: #fff; margin-bottom: 15px; font-size: 18px; font-weight: bold;">Speicherkapazität wählen:</h3>';
+            phone.storageOptions.forEach(function(opt) {
+              // İndirim yüzdesini hesapla
+              var discountPercent = opt.realPrice > 0 ? Math.round(((opt.realPrice - opt.discountedPrice) / opt.realPrice) * 100) : 0;
+              
+              // Mevcut storage seçeneği mi kontrol et
+              var isSelected = currentStorage === opt.storage;
+              var borderColor = isSelected ? '#f91f1f' : '#333';
+              var backgroundColor = isSelected ? '#1a1a1a' : 'transparent';
+              
+              // Storage seçeneğine tıklanınca query string ile yönlendir
+              var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage);
+              
+              storageHTML += '<a href="' + storageLink + '" class="storage-option-item" style="display: block; padding: 15px; margin: 10px 0; border: 2px solid ' + borderColor + '; background: ' + backgroundColor + '; cursor: pointer; border-radius: 5px; text-decoration: none; color: #fff; transition: all 0.3s;" ' +
+                     'onmouseover="this.style.borderColor=\'#f91f1f\'; this.style.backgroundColor=\'#1a1a1a\'" ' +
+                     'onmouseout="this.style.borderColor=\'' + borderColor + '\'; this.style.backgroundColor=\'' + backgroundColor + '\'">' +
+                     '<strong style="font-size: 16px;">' + opt.storage + '</strong><br>' +
+                     '<span style="text-decoration: line-through; color: #888; font-size: 14px;">UVP ' + opt.realPrice.toFixed(2) + ' €</span> ' +
+                     '<span style="color: #f91f1f; font-size: 20px; font-weight: bold; margin-left: 10px;">' + opt.discountedPrice.toFixed(2) + ' €</span> ' +
+                     (discountPercent > 0 ? '<span style="background: #f91f1f; padding: 4px 8px; border-radius: 3px; font-size: 12px; margin-left: 10px;">-' + discountPercent + '%</span>' : '') +
+                     '</a>';
+            });
+            
+            storageContainer.innerHTML = storageHTML;
             
             // Eğer daha önce oluşturulmuş bir phone-storage-options varsa kaldır
             var existingStorageOptions = document.getElementById('phone-storage-options');
@@ -1573,24 +1598,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
             }
             
             console.log('📦 Storage container oluşturuldu ve eklendi:', storageContainer);
-            console.log('📦 Storage container HTML:', storageContainer.outerHTML.substring(0, 200));
-            
-            // Storage seçeneklerine tıklama event listener'ı ekle
-            setTimeout(function() {
-              var storageOptions = storageContainer.querySelectorAll('.storage-option-item');
-              console.log('🔗 Storage seçenekleri bulundu:', storageOptions.length);
-              storageOptions.forEach(function(option) {
-                option.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  var link = this.getAttribute('data-storage-link');
-                  if (link) {
-                    console.log('🔗 Storage seçeneğine tıklandı, yönlendiriliyor:', link);
-                    window.location.href = link;
-                  }
-                });
-              });
-            }, 100);
+            console.log('📦 Storage container HTML:', storageContainer.outerHTML.substring(0, 300));
           }
       })
       .catch(function(err) {
