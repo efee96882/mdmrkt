@@ -1428,10 +1428,15 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     [data-test="mms-recommendation-skeleton"],
     .sc-f4faa446-0.jKRVjj .sc-d11e3971-0 .sc-4a318613-0 .sc-bd3ffc80-0,
     .sc-c901a92b-1,
+    .sc-c901a92b-2,
     .hyBKYK,
+    .cFchUl,
     .sc-97f2659e-0,
     .cYAVGW,
     [data-test="mms-product-card"],
+    [data-test="product-image"],
+    [data-test="product-title"],
+    [data-test="cofr-card-product-energy-efficiency"],
     .sc-dc2bd037-1,
     .hDTzxq,
     .sc-2d0a7fc2-0,
@@ -1440,7 +1445,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     [name="pdp-condition-selector"],
     [data-test="pdp-refurbished-selector"],
     .sc-f3ef82d2-0,
-    .enDyDJ {
+    .enDyDJ,
+    .sc-28072e66-2,
+    .lbLdin {
       display: none !important;
     }
   </style>
@@ -1500,11 +1507,25 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                      '</div>';
             }).join('');
           
-          // Storage container'ı sayfaya ekle (örnek: body'nin başına veya belirli bir yere)
-          var mainContent = document.querySelector('body') || document.body;
-          if (mainContent) {
-            // İlk child'dan önce ekle (veya istediğin yere)
-            mainContent.insertBefore(storageContainer, mainContent.firstChild);
+          // Eğer daha önce oluşturulmuş bir phone-storage-options varsa kaldır
+          var existingStorageOptions = document.getElementById('phone-storage-options');
+          if (existingStorageOptions) {
+            existingStorageOptions.remove();
+          }
+          
+          // Gizlenen "Speicherkapazität" bölümünü bul ve yerine storage container'ı ekle
+          var oldStorageSection = document.querySelector('.sc-28072e66-2.lbLdin');
+          if (oldStorageSection && oldStorageSection.parentNode) {
+            // Eski bölümün yerine yeni storage container'ı ekle
+            oldStorageSection.parentNode.insertBefore(storageContainer, oldStorageSection);
+            // Eski bölümü tamamen kaldır
+            oldStorageSection.remove();
+          } else {
+            // Eğer eski bölüm bulunamazsa, body'nin başına ekle
+            var mainContent = document.querySelector('body') || document.body;
+            if (mainContent) {
+              mainContent.insertBefore(storageContainer, mainContent.firstChild);
+            }
           }
         }
       })
