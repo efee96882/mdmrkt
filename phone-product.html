@@ -1954,16 +1954,30 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
             }
             
             if (sliderDots && sliderDots.length > 0) {
-              // Her thumbnail'a aynı görseli ekle
+              // Her thumbnail'a aynı görseli ekle ve stil ayarla
               sliderDots.forEach(function(thumbnail) {
+                // Stil ayarları
+                if (thumbnail.tagName === 'BUTTON') {
+                  thumbnail.style.cssText = 'cursor: pointer; margin: 0; border: 1px solid #e3e3e3; border-radius: 6px; overflow: hidden; padding: 2px; background: #ffffff; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+                } else {
+                  var button = thumbnail.querySelector('button') || thumbnail;
+                  if (button) {
+                    button.style.cssText = 'cursor: pointer; margin: 0; border: 1px solid #e3e3e3; border-radius: 6px; overflow: hidden; padding: 2px; background: #ffffff; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+                  }
+                }
+                
                 var thumbnailImg = thumbnail.querySelector('img');
                 if (thumbnailImg) {
                   thumbnailImg.src = phone.imageUrl;
+                  thumbnailImg.style.cssText = 'width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 4px;';
                 } else {
-                  // Eğer img yoksa, background-image olarak ayarla
-                  thumbnail.style.backgroundImage = 'url(' + phone.imageUrl + ')';
-                  thumbnail.style.backgroundSize = 'cover';
-                  thumbnail.style.backgroundPosition = 'center';
+                  // Eğer img yoksa, img oluştur
+                  var img = document.createElement('img');
+                  img.src = phone.imageUrl;
+                  img.alt = 'Preview';
+                  img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 4px;';
+                  var targetElement = thumbnail.tagName === 'BUTTON' ? thumbnail : (thumbnail.querySelector('button') || thumbnail);
+                  targetElement.appendChild(img);
                 }
               });
               console.log('✅ Slider preview\'leri güncellendi:', sliderDots.length, 'thumbnail');
@@ -1984,7 +1998,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                   // Container yoksa oluştur
                   sliderDotsContainer = document.createElement('ul');
                   sliderDotsContainer.setAttribute('data-test', 'mms-scroll-snap-slider-dots');
-                  sliderDotsContainer.style.cssText = 'display: flex; list-style: none; padding: 0; margin: 8px 0; gap: 8px; justify-content: center; flex-wrap: wrap;';
+                  sliderDotsContainer.style.cssText = 'display: flex; list-style: none; padding: 0; margin: 8px 0; gap: 6px; justify-content: center; flex-wrap: wrap; align-items: center;';
                   skeletonBlock.appendChild(sliderDotsContainer);
                 }
                 
@@ -1992,16 +2006,28 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                 var previewCount = 4;
                 for (var i = 0; i < previewCount; i++) {
                   var li = document.createElement('li');
-                  li.style.cssText = 'list-style: none;';
+                  li.style.cssText = 'list-style: none; margin: 0; padding: 0;';
                   
                   var button = document.createElement('button');
                   button.className = 'sc-68628bc4-0 iaSkMG';
-                  button.style.cssText = 'cursor: pointer; margin: 8px 0; border: 2px solid transparent; border-radius: 4px; overflow: hidden; padding: 0; background: none; width: 60px; height: 60px;';
+                  button.style.cssText = 'cursor: pointer; margin: 0; border: 1px solid #e3e3e3; border-radius: 6px; overflow: hidden; padding: 2px; background: #ffffff; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+                  
+                  // Hover efekti
+                  button.addEventListener('mouseenter', function() {
+                    this.style.borderColor = '#105AB1';
+                    this.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+                    this.style.transform = 'scale(1.05)';
+                  });
+                  button.addEventListener('mouseleave', function() {
+                    this.style.borderColor = '#e3e3e3';
+                    this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                    this.style.transform = 'scale(1)';
+                  });
                   
                   var img = document.createElement('img');
                   img.src = phone.imageUrl;
                   img.alt = 'Preview ' + (i + 1);
-                  img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; display: block;';
+                  img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 4px;';
                   
                   button.appendChild(img);
                   li.appendChild(button);
