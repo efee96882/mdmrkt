@@ -1486,14 +1486,16 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
   <!-- Dinamik telefon bilgileri ve storage seçenekleri -->
   <script>
   (function() {
-    // URL'den slug ve storage parametrelerini al
+    // URL'den slug, storage ve prices parametrelerini al
     var urlParams = new URLSearchParams(window.location.search);
     var slug = urlParams.get('slug');
     var currentStorage = urlParams.get('storage');
+    var pricesParam = urlParams.get('prices');
     
     console.log('🔍 URL Parametreleri:', {
       slug: slug,
       storage: currentStorage,
+      prices: pricesParam,
       fullSearch: window.location.search
     });
     
@@ -1502,16 +1504,95 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       return;
     }
     
+    // Query string'den fiyatları parse et
+    var storageOptions = [];
+    if (pricesParam) {
+      // Format: 256GB-1299-1199,512GB-1499-1399,1TB-1699-1599,2TB-1899-1799
+      var priceParts = pricesParam.split(',');
+      priceParts.forEach(function(part) {
+        // Format: 256GB-1299-1199 veya 1TB-1699-1599
+        var match = part.match(/^(\d+)(GB|TB)-(\d+)-(\d+)$/);
+        if (match) {
+          var storageValue = match[1] + ' ' + match[2]; // "256 GB" veya "1 TB"
+          var realPrice = parseFloat(match[3]);
+          var discountedPrice = parseFloat(match[4]);
+          storageOptions.push({
+            storage: storageValue,
+            realPrice: realPrice,
+            discountedPrice: discountedPrice
+          });
+        }
+      });
+      console.log('💾 Query string\'den storage seçenekleri parse edildi:', storageOptions);
+    }
+    
     console.log('📱 Telefon yükleniyor, slug:', slug, 'storage:', currentStorage);
     
-    // API'den telefon bilgilerini çek
+    // Eğer query string'den fiyatlar gelmişse, direkt HTML'e ekle
+    if (storageOptions.length > 0) {
+      // Başlık güncelle
+      if (currentStorage) {
+        var titleName = 'iPhone ' + slug.replace('iphone-', '').replace(/-/g, ' ') + ' ' + currentStorage;
+        document.title = titleName + ' | MediaMarkt';
+      }
+      
+      // Storage seçeneklerini sabit HTML olarak ekle
+      var storageContainer = document.createElement('div');
+      storageContainer.id = 'phone-storage-options';
+      storageContainer.style.cssText = 'padding: 20px; background: #000; color: #fff; margin: 20px 0; position: relative; z-index: 10000; width: 100%; box-sizing: border-box; display: block !important; visibility: visible !important; opacity: 1 !important;';
+      
+      var storageHTML = '<h3 style="color: #fff; margin-bottom: 15px; font-size: 18px; font-weight: bold;">Speicherkapazität wählen:</h3>';
+      storageOptions.forEach(function(opt) {
+        // İndirim yüzdesini hesapla
+        var discountPercent = opt.realPrice > 0 ? Math.round(((opt.realPrice - opt.discountedPrice) / opt.realPrice) * 100) : 0;
+        
+        // Mevcut storage seçeneği mi kontrol et
+        var isSelected = currentStorage === opt.storage;
+        var borderColor = isSelected ? '#f91f1f' : '#333';
+        var backgroundColor = isSelected ? '#1a1a1a' : 'transparent';
+        
+        // Storage seçeneğine tıklanınca query string ile yönlendir
+        var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage) + '&prices=' + encodeURIComponent(pricesParam);
+        
+        // Tırnak sorunlarını önlemek için değişkenleri escape et
+        var borderColorEscaped = borderColor.replace(/'/g, "\\'");
+        var backgroundColorEscaped = backgroundColor.replace(/'/g, "\\'");
+        
+        storageHTML += '<a href="' + storageLink + '" class="storage-option-item" style="display: block; padding: 15px; margin: 10px 0; border: 2px solid ' + borderColor + '; background: ' + backgroundColor + '; cursor: pointer; border-radius: 5px; text-decoration: none; color: #fff; transition: all 0.3s;" ' +
+               'onmouseover="this.style.borderColor=\'#f91f1f\'; this.style.backgroundColor=\'#1a1a1a\'" ' +
+               'onmouseout="this.style.borderColor=\'' + borderColorEscaped + '\'; this.style.backgroundColor=\'' + backgroundColorEscaped + '\'">' +
+               '<strong style="font-size: 16px;">' + (opt.storage || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '</strong><br>' +
+               '<span style="text-decoration: line-through; color: #888; font-size: 14px;">UVP ' + opt.realPrice.toFixed(2) + ' €</span> ' +
+               '<span style="color: #f91f1f; font-size: 20px; font-weight: bold; margin-left: 10px;">' + opt.discountedPrice.toFixed(2) + ' €</span> ' +
+               (discountPercent > 0 ? '<span style="background: #f91f1f; padding: 4px 8px; border-radius: 3px; font-size: 12px; margin-left: 10px;">-' + discountPercent + '%</span>' : '') +
+               '</a>';
+      });
+      
+      storageContainer.innerHTML = storageHTML;
+      
+      // Storage container'ı sayfanın en üstüne ekle (body'nin başına)
+      var bodyElement = document.body;
+      if (bodyElement) {
+        if (bodyElement.firstChild) {
+          bodyElement.insertBefore(storageContainer, bodyElement.firstChild);
+          console.log('✅ Storage container sayfanın en üstüne eklendi (query string\'den)');
+        } else {
+          bodyElement.appendChild(storageContainer);
+          console.log('✅ Storage container body\'ye eklendi (query string\'den)');
+        }
+      }
+      
+      return; // Query string'den fiyatlar geldi, MongoDB'den çekmeye gerek yok
+    }
+    
+    // Eğer query string'den fiyatlar gelmemişse, MongoDB'den çek (fallback)
     fetch('/api/phones?slug=' + encodeURIComponent(slug))
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       })
       .then(function(phone) {
-        console.log('✅ Telefon bilgileri alındı:', phone);
+        console.log('✅ Telefon bilgileri alındı (MongoDB\'den):', phone);
         
           // Başlık ve meta bilgilerini güncelle
           if (phone.baseName) {
@@ -1530,13 +1611,18 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
           
           // Storage seçeneklerini göster (eğer storage seçenekleri varsa)
           if (phone.storageOptions && phone.storageOptions.length > 0) {
-            console.log('💾 Storage seçenekleri:', phone.storageOptions);
+            console.log('💾 Storage seçenekleri (MongoDB\'den):', phone.storageOptions);
             console.log('💾 Mevcut storage:', currentStorage);
             
             // Storage seçeneklerini bir div'e ekle
             var storageContainer = document.createElement('div');
             storageContainer.id = 'phone-storage-options';
             storageContainer.style.cssText = 'padding: 20px; background: #000; color: #fff; margin: 20px 0; position: relative; z-index: 10000; width: 100%; box-sizing: border-box; display: block !important; visibility: visible !important; opacity: 1 !important;';
+            // Storage seçeneklerinden prices string'i oluştur
+            var pricesString = phone.storageOptions.map(function(opt) {
+              return opt.storage.replace(/\s+/g, '') + '-' + opt.realPrice + '-' + opt.discountedPrice;
+            }).join(',');
+            
             // Storage seçeneklerini direkt <a> tag'leri ile oluştur (daha güvenilir)
             var storageHTML = '<h3 style="color: #fff; margin-bottom: 15px; font-size: 18px; font-weight: bold;">Speicherkapazität wählen:</h3>';
             phone.storageOptions.forEach(function(opt) {
@@ -1548,8 +1634,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
               var borderColor = isSelected ? '#f91f1f' : '#333';
               var backgroundColor = isSelected ? '#1a1a1a' : 'transparent';
               
-              // Storage seçeneğine tıklanınca query string ile yönlendir
-              var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage);
+              // Storage seçeneğine tıklanınca query string ile yönlendir (prices parametresi ile)
+              var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage) + '&prices=' + encodeURIComponent(pricesString);
               
               // Tırnak sorunlarını önlemek için değişkenleri escape et
               var borderColorEscaped = borderColor.replace(/'/g, "\\'");

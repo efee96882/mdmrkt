@@ -119,16 +119,23 @@
                 var productLink = '#';
                 if (p.slug) {
                     productLink = 'phone-product.html?slug=' + encodeURIComponent(p.slug);
-                    // Eğer storage seçenekleri varsa, ilk storage seçeneğini query string'e ekle
+                    // Eğer storage seçenekleri varsa, ilk storage seçeneğini ve tüm fiyatları query string'e ekle
                     if (p.storageOptions && p.storageOptions.length > 0) {
                         var firstStorage = p.storageOptions[0].storage;
                         productLink += '&storage=' + encodeURIComponent(firstStorage);
+                        
+                        // Tüm storage seçeneklerinin fiyatlarını query string'e ekle
+                        // Format: prices=256GB-1299-1199,512GB-1499-1399,1TB-1699-1599,2TB-1899-1799
+                        var pricesString = p.storageOptions.map(function(opt) {
+                            return opt.storage.replace(/\s+/g, '') + '-' + opt.realPrice + '-' + opt.discountedPrice;
+                        }).join(',');
+                        productLink += '&prices=' + encodeURIComponent(pricesString);
                     }
                 }
                 
                 // Debug: Slug ve link bilgilerini kontrol et
                 if (p.slug) {
-                    console.log('🔗 Ürün linki:', p.name || 'İsimsiz', '- Slug:', p.slug, '- Storage:', p.storageOptions && p.storageOptions.length > 0 ? p.storageOptions[0].storage : 'yok', '- Link:', productLink);
+                    console.log('🔗 Ürün linki:', p.name || 'İsimsiz', '- Slug:', p.slug, '- Storage Options:', p.storageOptions ? p.storageOptions.length + ' adet' : 'yok', '- Link:', productLink);
                 }
                 
                 // data-href attribute kullanarak daha güvenli yönlendirme
