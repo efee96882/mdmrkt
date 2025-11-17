@@ -1928,124 +1928,115 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
   <!-- Ürün açıklaması gösterimi için script -->
   <script>
   (function() {
-    // sc-94eb08bc-0 dRmOMv class'ına sahip elementlere tıklama event listener'ı ekle
-    function initDescriptionClickHandler() {
-      // Event delegation kullanarak dinamik elementler için de çalışır
-      document.addEventListener('click', function(e) {
-        // Tıklanan element veya parent'ında sc-94eb08bc-0 ve dRmOMv class'ları var mı kontrol et
-        var target = e.target;
-        var clickedElement = null;
-        
-        // Parent element'leri kontrol et
-        while (target && target !== document.body) {
-          if (target.classList && 
-              target.classList.contains('sc-94eb08bc-0') && 
-              target.classList.contains('dRmOMv')) {
+    console.log('🚀 Ürün bilgileri script başlatıldı');
+    
+    // Tıklama event listener'ı
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      var clickedElement = null;
+      
+      // Tıklanan element veya parent'ında sc-94eb08bc-0 ve dRmOMv class'ları var mı kontrol et
+      while (target && target !== document.body) {
+        if (target.classList) {
+          var hasSc = target.classList.contains('sc-94eb08bc-0');
+          var hasDrm = target.classList.contains('dRmOMv');
+          if (hasSc && hasDrm) {
             clickedElement = target;
+            console.log('✅ Tıklanan element bulundu:', clickedElement);
             break;
           }
-          target = target.parentElement;
+        }
+        target = target.parentElement;
+      }
+      
+      if (clickedElement) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🖱️ Element tıklandı, bilgiler yükleniyor...');
+        
+        // URL'den slug parametresini al
+        var urlParams = new URLSearchParams(window.location.search);
+        var slug = urlParams.get('slug');
+        var storageParam = urlParams.get('storage') || '';
+        
+        console.log('📋 URL Parametreleri - slug:', slug, 'storage:', storageParam);
+        
+        if (!slug) {
+          console.error('❌ Slug parametresi bulunamadı');
+          alert('Ürün bilgisi bulunamadı.');
+          return;
         }
         
-        if (clickedElement) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          // URL'den slug parametresini al
-          var urlParams = new URLSearchParams(window.location.search);
-          var slug = urlParams.get('slug');
-          
-          if (!slug) {
-            console.warn('⚠️ Slug parametresi bulunamadı');
-            alert('Ürün bilgisi bulunamadı.');
-            return;
-          }
-          
-          console.log('🔍 Ürün açıklaması yükleniyor, slug:', slug);
-          
-          // MongoDB'den ürün açıklamasını çek
-          fetch('/api/phones?slug=' + encodeURIComponent(slug))
-            .then(function(res) {
-              if (!res.ok) throw new Error('HTTP ' + res.status);
-              return res.json();
-            })
-            .then(function(phone) {
-              console.log('✅ Ürün bilgileri alındı:', phone);
-              
-              if (phone) {
-                // URL'den storage parametresini al
-                var storageParam = urlParams.get('storage') || '';
-                
-                // Storage bilgisini bul
-                var speicherkapazitat = storageParam || 'Nicht angegeben';
-                if (phone.storageOptions && phone.storageOptions.length > 0 && !storageParam) {
-                  speicherkapazitat = phone.storageOptions[0].storage;
-                }
-                
-                // Sayfanın en üstüne bilgileri yaz
-                writeProductInfoAtTop(phone, speicherkapazitat);
-              } else {
-                alert('Ürün bilgisi bulunamadı.');
-              }
-            })
-            .catch(function(err) {
-              console.error('❌ Ürün açıklaması yüklenemedi:', err);
-              alert('Ürün açıklaması yüklenirken bir hata oluştu.');
-            });
-        }
-      });
-    }
+        // MongoDB'den ürün bilgilerini çek
+        fetch('/api/phones?slug=' + encodeURIComponent(slug))
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(phone) {
+            console.log('✅ Ürün bilgileri alındı:', phone);
+            
+            if (!phone) {
+              alert('Ürün bilgisi bulunamadı.');
+              return;
+            }
+            
+            // Storage bilgisini bul
+            var speicherkapazitat = storageParam || 'Nicht angegeben';
+            if (!storageParam && phone.storageOptions && phone.storageOptions.length > 0) {
+              speicherkapazitat = phone.storageOptions[0].storage;
+            }
+            
+            console.log('💾 Storage:', speicherkapazitat);
+            
+            // Sayfanın EN ÜSTÜNE bilgileri yaz
+            var existingInfo = document.getElementById('product-info-top');
+            if (existingInfo) {
+              existingInfo.remove();
+            }
+            
+            var infoDiv = document.createElement('div');
+            infoDiv.id = 'product-info-top';
+            
+            // Bilgileri topla
+            var infoText = '';
+            if (phone.displayDiagonale) {
+              infoText += 'Displaydiagonale: ' + phone.displayDiagonale + '\n';
+            }
+            infoText += 'Speicherkapazität: ' + speicherkapazitat + '\n';
+            if (phone.betriebssystem) {
+              infoText += 'Betriebssystem: ' + phone.betriebssystem + '\n';
+            }
+            if (phone.prozessor) {
+              infoText += 'Prozessor: ' + phone.prozessor + '\n';
+            }
+            if (phone.description) {
+              infoText += 'Beschreibung: ' + phone.description;
+            }
+            
+            infoDiv.textContent = infoText;
+            infoDiv.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 999999 !important; background: #ffffff !important; padding: 20px !important; white-space: pre-wrap !important; display: block !important; font-size: 16px !important; color: #000000 !important; border-bottom: 2px solid #e60012 !important;';
+            
+            // Body'nin EN BAŞINA ekle
+            if (document.body) {
+              document.body.insertBefore(infoDiv, document.body.firstChild);
+              console.log('✅ Bilgiler sayfanın en üstüne eklendi');
+            } else {
+              document.documentElement.appendChild(infoDiv);
+              console.log('✅ Bilgiler documentElement\'e eklendi');
+            }
+            
+            // Sayfayı en üste kaydır
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          })
+          .catch(function(err) {
+            console.error('❌ Hata:', err);
+            alert('Ürün bilgileri yüklenirken hata: ' + err.message);
+          });
+      }
+    });
     
-    // Sayfanın en üstüne ürün bilgilerini yaz
-    function writeProductInfoAtTop(phone, speicherkapazitat) {
-      // Eğer zaten bir bilgi elementi varsa kaldır
-      var existingInfo = document.getElementById('product-info-top');
-      if (existingInfo) {
-        existingInfo.remove();
-      }
-      
-      // Bilgileri içeren basit bir element oluştur
-      var infoElement = document.createElement('div');
-      infoElement.id = 'product-info-top';
-      infoElement.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; z-index: 99999; background: #fff; padding: 10px; white-space: pre-wrap; display: block;';
-      
-      // Bilgileri topla
-      var infoText = '';
-      
-      if (phone.displayDiagonale) {
-        infoText += 'Displaydiagonale: ' + phone.displayDiagonale + '\n';
-      }
-      
-      infoText += 'Speicherkapazität: ' + speicherkapazitat + '\n';
-      
-      if (phone.betriebssystem) {
-        infoText += 'Betriebssystem: ' + phone.betriebssystem + '\n';
-      }
-      
-      if (phone.prozessor) {
-        infoText += 'Prozessor: ' + phone.prozessor + '\n';
-      }
-      
-      if (phone.description) {
-        infoText += 'Beschreibung: ' + phone.description;
-      }
-      
-      // Text node olarak ekle
-      infoElement.textContent = infoText;
-      
-      // Body'ye ekle (en üste)
-      document.body.appendChild(infoElement);
-      
-      // Sayfayı en üste kaydır
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
-    // Sayfa yüklendiğinde event listener'ı ekle
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDescriptionClickHandler);
-    } else {
-      initDescriptionClickHandler();
-    }
+    console.log('✅ Event listener eklendi');
   })();
   </script>
   
