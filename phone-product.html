@@ -1695,6 +1695,13 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         // sc-be471825-5 gdyQYk class'ına sahip tüm elementleri bul
         var specElements = targetDiv.querySelectorAll('.sc-be471825-5.gdyQYk, .gdyQYk');
         
+        // URL'den storage parametresini al
+        var urlParams = new URLSearchParams(window.location.search);
+        var currentStorage = urlParams.get('storage') || '';
+        if (!currentStorage && phone.storageOptions && phone.storageOptions.length > 0) {
+          currentStorage = phone.storageOptions[0].storage;
+        }
+        
         if (specElements.length === 0) {
           // Alternatif olarak tüm text içeren elementleri bul
           var allTextElements = targetDiv.querySelectorAll('*');
@@ -1875,6 +1882,49 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
             var priceText = Math.floor(discountedPrice).toString();
             priceElement.textContent = priceText;
             console.log('✅ Discounted price güncellendi:', priceText);
+          }
+        }
+        
+        // Description - pdp-description-pim-fallback elementinin içindeki article'ı bul ve güncelle
+        var pdpDescriptionElement = document.querySelector('.pdp-description-pim-fallback') || 
+                                     document.querySelector('#pdp-description-pim-fallback') ||
+                                     document.querySelector('[data-test="pdp-description-pim-fallback"]');
+        if (pdpDescriptionElement && phone.description) {
+          var articleElement = pdpDescriptionElement.querySelector('article');
+          if (articleElement) {
+            articleElement.textContent = phone.description;
+            console.log('✅ pdp-description-pim-fallback article güncellendi:', phone.description);
+          } else {
+            console.warn('⚠️ pdp-description-pim-fallback içinde article elementi bulunamadı');
+          }
+        }
+        
+        // Product image - sc-68628bc4-1 kDrCpj pdp-gallery-image elementini bul ve güncelle
+        if (phone.imageUrl) {
+          var galleryImageElement = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image') ||
+                                     document.querySelector('.pdp-gallery-image.sc-68628bc4-1.kDrCpj') ||
+                                     document.querySelector('.sc-68628bc4-1.kDrCpj') ||
+                                     document.querySelector('.pdp-gallery-image');
+          
+          if (galleryImageElement) {
+            // Eğer element bir img ise direkt src'yi güncelle
+            if (galleryImageElement.tagName === 'IMG') {
+              galleryImageElement.src = phone.imageUrl;
+              console.log('✅ Ürün görseli güncellendi (img):', phone.imageUrl);
+            } else {
+              // Eğer container ise içindeki img'yi bul ve güncelle
+              var imgElement = galleryImageElement.querySelector('img');
+              if (imgElement) {
+                imgElement.src = phone.imageUrl;
+                console.log('✅ Ürün görseli güncellendi (container içindeki img):', phone.imageUrl);
+              } else {
+                // Eğer img yoksa, background-image olarak ayarla veya img oluştur
+                galleryImageElement.style.backgroundImage = 'url(' + phone.imageUrl + ')';
+                console.log('✅ Ürün görseli güncellendi (background-image):', phone.imageUrl);
+              }
+            }
+          } else {
+            console.warn('⚠️ pdp-gallery-image elementi bulunamadı');
           }
         }
       }
