@@ -116,11 +116,19 @@
                 }
 
                 // Telefonlar için slug linki, normal ürünler için #
-                var productLink = p.slug ? 'phone-product.html?slug=' + encodeURIComponent(p.slug) : '#';
+                var productLink = '#';
+                if (p.slug) {
+                    productLink = 'phone-product.html?slug=' + encodeURIComponent(p.slug);
+                    // Eğer storage seçenekleri varsa, ilk storage seçeneğini query string'e ekle
+                    if (p.storageOptions && p.storageOptions.length > 0) {
+                        var firstStorage = p.storageOptions[0].storage;
+                        productLink += '&storage=' + encodeURIComponent(firstStorage);
+                    }
+                }
                 
                 // Debug: Slug ve link bilgilerini kontrol et
                 if (p.slug) {
-                    console.log('🔗 Ürün linki:', p.name || 'İsimsiz', '- Slug:', p.slug, '- Link:', productLink);
+                    console.log('🔗 Ürün linki:', p.name || 'İsimsiz', '- Slug:', p.slug, '- Storage:', p.storageOptions && p.storageOptions.length > 0 ? p.storageOptions[0].storage : 'yok', '- Link:', productLink);
                 }
                 
                 // data-href attribute kullanarak daha güvenli yönlendirme
