@@ -1551,10 +1551,14 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
               // Storage seçeneğine tıklanınca query string ile yönlendir
               var storageLink = 'phone-product.html?slug=' + encodeURIComponent(slug) + '&storage=' + encodeURIComponent(opt.storage);
               
+              // Tırnak sorunlarını önlemek için değişkenleri escape et
+              var borderColorEscaped = borderColor.replace(/'/g, "\\'");
+              var backgroundColorEscaped = backgroundColor.replace(/'/g, "\\'");
+              
               storageHTML += '<a href="' + storageLink + '" class="storage-option-item" style="display: block; padding: 15px; margin: 10px 0; border: 2px solid ' + borderColor + '; background: ' + backgroundColor + '; cursor: pointer; border-radius: 5px; text-decoration: none; color: #fff; transition: all 0.3s;" ' +
                      'onmouseover="this.style.borderColor=\'#f91f1f\'; this.style.backgroundColor=\'#1a1a1a\'" ' +
-                     'onmouseout="this.style.borderColor=\'' + borderColor + '\'; this.style.backgroundColor=\'' + backgroundColor + '\'">' +
-                     '<strong style="font-size: 16px;">' + opt.storage + '</strong><br>' +
+                     'onmouseout="this.style.borderColor=\'' + borderColorEscaped + '\'; this.style.backgroundColor=\'' + backgroundColorEscaped + '\'">' +
+                     '<strong style="font-size: 16px;">' + (opt.storage || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '</strong><br>' +
                      '<span style="text-decoration: line-through; color: #888; font-size: 14px;">UVP ' + opt.realPrice.toFixed(2) + ' €</span> ' +
                      '<span style="color: #f91f1f; font-size: 20px; font-weight: bold; margin-left: 10px;">' + opt.discountedPrice.toFixed(2) + ' €</span> ' +
                      (discountPercent > 0 ? '<span style="background: #f91f1f; padding: 4px 8px; border-radius: 3px; font-size: 12px; margin-left: 10px;">-' + discountPercent + '%</span>' : '') +
