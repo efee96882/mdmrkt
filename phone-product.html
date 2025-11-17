@@ -1941,35 +1941,6 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                   priceElement.textContent = priceText;
                   priceElement.innerText = priceText;
                   
-                  // "1299," yazısıyla aynı boyutta - dqaOrX veya hkPPsY stillerini kullan
-                  priceElement.style.fontFamily = 'MMHeadline, Arial, sans-serif';
-                  priceElement.style.fontSize = '1.75rem';
-                  priceElement.style.fontWeight = '400';
-                  priceElement.style.color = '#000000';
-                  priceElement.style.lineHeight = 'calc(32/28)';
-                  priceElement.style.letterSpacing = '0em';
-                  priceElement.style.margin = '0';
-                  priceElement.style.padding = '0';
-                  priceElement.style.textAlign = 'right';
-                  priceElement.style.display = 'block';
-                  priceElement.style.width = '100%';
-                  priceElement.style.wordBreak = 'normal';
-                  
-                  // Responsive font size
-                  if (window.matchMedia && window.matchMedia('(min-width: 47em)').matches) {
-                    priceElement.style.fontSize = '3rem';
-                    priceElement.style.lineHeight = 'calc(44/48)';
-                  }
-                  
-                  // Parent element'i kontrol et ve sağa hizala
-                  var parentElement = priceElement.parentElement;
-                  if (parentElement) {
-                    parentElement.style.textAlign = 'right';
-                    parentElement.style.display = 'flex';
-                    parentElement.style.justifyContent = 'flex-end';
-                    parentElement.style.alignItems = 'center';
-                  }
-                  
                   console.log('✅ Discounted price güncellendi (ilk blok):', priceText, '(element:', priceElement, ')');
                   return true;
                 } else {
@@ -2197,35 +2168,6 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                 var priceText = Math.floor(discountedPrice).toString() + ' €';
                 priceElement.textContent = priceText;
                 priceElement.innerText = priceText;
-                
-                // "1299," yazısıyla aynı boyutta - dqaOrX veya hkPPsY stillerini kullan
-                priceElement.style.fontFamily = 'MMHeadline, Arial, sans-serif';
-                priceElement.style.fontSize = '1.75rem';
-                priceElement.style.fontWeight = '400';
-                priceElement.style.color = '#000000';
-                priceElement.style.lineHeight = 'calc(32/28)';
-                priceElement.style.letterSpacing = '0em';
-                priceElement.style.margin = '0';
-                priceElement.style.padding = '0';
-                priceElement.style.textAlign = 'right';
-                priceElement.style.display = 'block';
-                priceElement.style.width = '100%';
-                priceElement.style.wordBreak = 'normal';
-                
-                // Responsive font size
-                if (window.matchMedia && window.matchMedia('(min-width: 47em)').matches) {
-                  priceElement.style.fontSize = '3rem';
-                  priceElement.style.lineHeight = 'calc(44/48)';
-                }
-                
-                // Parent element'i kontrol et ve sağa hizala
-                var parentElement = priceElement.parentElement;
-                if (parentElement) {
-                  parentElement.style.textAlign = 'right';
-                  parentElement.style.display = 'flex';
-                  parentElement.style.justifyContent = 'flex-end';
-                  parentElement.style.alignItems = 'center';
-                }
                 
                 console.log('✅ Discounted price güncellendi:', priceText, '(element:', priceElement, ')');
                 return true;
