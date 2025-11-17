@@ -118,8 +118,14 @@
                 // Telefonlar için slug linki, normal ürünler için #
                 var productLink = p.slug ? 'phone-product.html?slug=' + encodeURIComponent(p.slug) : '#';
                 
+                // Debug: Slug ve link bilgilerini kontrol et
+                if (p.slug) {
+                    console.log('🔗 Ürün linki:', p.name || 'İsimsiz', '- Slug:', p.slug, '- Link:', productLink);
+                }
+                
+                // data-href attribute kullanarak daha güvenli yönlendirme
                 return (
-                    '<div class="black-week-product-card" onclick="window.location.href=\'' + productLink + '\'" style="cursor: pointer;">' +
+                    '<div class="black-week-product-card" data-href="' + productLink.replace(/"/g, '&quot;') + '" style="cursor: pointer;">' +
                         '<div class="black-week-badge">Black Week Deal</div>' +
                         '<div class="black-week-product-image-wrapper">' +
                             '<img src="' + imageUrl + '" alt="' + (name || 'Ürün görseli') + '" onerror="this.src=\'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_161554000/fee_786_587_png\'">' +
@@ -136,6 +142,20 @@
                     '</div>'
                 );
             }).join('');
+            
+            // Ürün kartlarına tıklama event listener'ı ekle
+            setTimeout(function() {
+                var productCards = container.querySelectorAll('.black-week-product-card[data-href]');
+                productCards.forEach(function(card) {
+                    card.addEventListener('click', function(e) {
+                        var href = this.getAttribute('data-href');
+                        if (href && href !== '#') {
+                            console.log('🔗 Ürün kartına tıklandı, yönlendiriliyor:', href);
+                            window.location.href = href;
+                        }
+                    });
+                });
+            }, 100);
         }
 
         // Önce phones (iPhone modelleri), sonra admin panel ürünleri
