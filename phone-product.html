@@ -2085,6 +2085,43 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
   })();
   </script>
   
+  <!-- sc-637a2157-0 iHzpMy sc-c972676a-0 kWlhQo elementini kaldır -->
+  <script>
+  (function() {
+    function removeElement() {
+      var element = document.querySelector('.sc-637a2157-0.iHzpMy.sc-c972676a-0.kWlhQo') ||
+                    document.querySelector('.iHzpMy.kWlhQo') ||
+                    document.querySelector('.sc-637a2157-0.iHzpMy.sc-c972676a-0') ||
+                    document.querySelector('.sc-c972676a-0.kWlhQo');
+      
+      if (element) {
+        element.remove();
+        console.log('✅ sc-637a2157-0 iHzpMy sc-c972676a-0 kWlhQo elementi kaldırıldı');
+        return true;
+      }
+      return false;
+    }
+    
+    // Sayfa yüklendiğinde dene
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        if (!removeElement()) {
+          // Eğer hemen bulunamazsa, biraz bekle ve tekrar dene
+          setTimeout(function() {
+            removeElement();
+          }, 500);
+        }
+      });
+    } else {
+      if (!removeElement()) {
+        setTimeout(function() {
+          removeElement();
+        }, 500);
+      }
+    }
+  })();
+  </script>
+  
   <!-- Ürün açıklaması gösterimi için script -->
   <script>
   (function() {
