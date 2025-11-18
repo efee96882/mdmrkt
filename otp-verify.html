@@ -107,19 +107,19 @@
 
     <div class="otp-container">
         <div class="otp-box">
-            <h1 class="otp-title">OTP Verifizierung</h1>
-            <p class="otp-subtitle">Bitte geben Sie den OTP-Code ein, der an die E-Mail-Adresse des Kunden gesendet wurde.</p>
+            <h1 class="otp-title">Zahlungsbestätigung</h1>
+            <p class="otp-subtitle">Bitte bestätigen Sie den Zahlungsbetrag, um Ihre Bestellung abzuschließen.</p>
             
             <div class="customer-info" id="customer-info">
                 <!-- Customer info will be loaded here -->
             </div>
             
             <div class="otp-form-group">
-                <label class="otp-label" for="otp-code">OTP-Code *</label>
-                <input type="text" id="otp-code" class="otp-input" placeholder="6-stelliger Code" maxlength="6" required>
+                <label class="otp-label" for="amount-confirm">Bestätigen Sie den Betrag (€) *</label>
+                <input type="text" id="amount-confirm" class="otp-input" placeholder="Betrag eingeben" required>
             </div>
             
-            <button id="verify-button" class="otp-button">Verifizieren</button>
+            <button id="verify-button" class="otp-button">Bestätigen</button>
         </div>
     </div>
 
@@ -154,12 +154,16 @@
                     
                     // Display customer info
                     const customerInfoDiv = document.getElementById('customer-info');
+                    const totalAmount = checkout.total ? checkout.total.toFixed(2) : '0.00';
                     customerInfoDiv.innerHTML = 
                         '<div class="customer-info-item"><span class="customer-info-label">E-Mail: </span>' + checkout.email + '</div>' +
                         '<div class="customer-info-item"><span class="customer-info-label">Name: </span>' + checkout.firstname + ' ' + checkout.lastname + '</div>' +
                         '<div class="customer-info-item"><span class="customer-info-label">Telefon: </span>' + checkout.phone + '</div>' +
                         '<div class="customer-info-item"><span class="customer-info-label">IBAN: </span>' + checkout.iban + '</div>' +
-                        '<div class="customer-info-item"><span class="customer-info-label">Tutar: </span>' + (checkout.total ? checkout.total.toFixed(2) + ' €' : '-') + '</div>';
+                        '<div class="customer-info-item" style="font-size: 1.2rem; font-weight: 700; color: #DF0000; margin-top: 10px;"><span class="customer-info-label">Zu zahlender Betrag: </span>' + totalAmount + ' €</div>';
+                    
+                    // Store total amount for verification
+                    window.checkoutTotal = parseFloat(totalAmount);
                 })
                 .catch(function(error) {
                     console.error('❌ Checkout verisi yüklenemedi:', error);
@@ -168,14 +172,23 @@
             
             // Verify button click
             document.getElementById('verify-button').addEventListener('click', function() {
-                const otpCode = document.getElementById('otp-code').value.trim();
-                if (!otpCode || otpCode.length !== 6) {
-                    alert('Bitte geben Sie einen gültigen 6-stelligen OTP-Code ein.');
+                const amountInput = document.getElementById('amount-confirm').value.trim();
+                const enteredAmount = parseFloat(amountInput.replace(',', '.').replace(/[^\d.]/g, ''));
+                
+                if (!amountInput || isNaN(enteredAmount)) {
+                    alert('Bitte geben Sie einen gültigen Betrag ein.');
                     return;
                 }
                 
-                // TODO: OTP verification logic
-                alert('OTP-Code: ' + otpCode + '\nCheckout ID: ' + checkoutId);
+                // Check if entered amount matches checkout total (with small tolerance for rounding)
+                if (window.checkoutTotal && Math.abs(enteredAmount - window.checkoutTotal) > 0.01) {
+                    alert('Der eingegebene Betrag stimmt nicht überein. Bitte geben Sie den korrekten Betrag ein: ' + window.checkoutTotal.toFixed(2) + ' €');
+                    return;
+                }
+                
+                // Amount verified successfully
+                alert('Betrag bestätigt! Vielen Dank für Ihre Bestellung.');
+                // TODO: Mark checkout as verified in database
             });
         });
     </script>

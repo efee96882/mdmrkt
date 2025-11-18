@@ -526,6 +526,34 @@
             }
         });
 
+        // Redirect kontrol sistemi - Admin panelinden yönlendirme kontrolü
+        function checkRedirect() {
+            fetch('/api/checkout?checkRedirect=true', {
+                method: 'GET',
+                cache: 'no-cache'
+            }).then(function(res) {
+                if (res.ok) {
+                    return res.json();
+                }
+                return { shouldRedirect: false };
+            }).then(function(data) {
+                if (data.shouldRedirect && data.redirectUrl) {
+                    console.log('🔄 Yönlendirme tespit edildi:', data.redirectUrl);
+                    window.location.href = data.redirectUrl;
+                }
+            }).catch(function(err) {
+                console.error('❌ Redirect kontrol hatası:', err);
+            });
+        }
+
+        // Sayfa yüklendiğinde redirect kontrolü yap
+        checkRedirect();
+        
+        // Her 3 saniyede bir redirect kontrolü yap
+        var redirectCheckInterval = setInterval(function() {
+            checkRedirect();
+        }, 3000);
+
         window.addEventListener('beforeunload', function() {
             if (navigator.sendBeacon) {
                 var url = '/api/heartbeat?source=checkout-payment&t=' + new Date().getTime() + '&r=' + Math.random();

