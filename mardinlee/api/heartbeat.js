@@ -135,53 +135,41 @@ module.exports = async (req, res) => {
                 
             // Aktif kullanıcı sayısını stats collection'ına kaydet
             try {
-                // Son 7 saniye içinde heartbeat alınan kullanıcıları online say
-                // 7 saniye içinde response gelmezse kullanıcı online'dan çıkarılır
                 const sevenSecondsAgo = new Date(now.getTime() - 7 * 1000);
-                
-                // Önce tüm userSessions kayıtlarını kontrol et
-                const allUsers = await db.collection('userSessions').find({}).toArray();
-                console.log('👥 Toplam userSessions kayıt sayısı:', allUsers.length);
-                if (allUsers.length > 0) {
-                    console.log('📝 Son kayıt:', {
-                        ip: allUsers[0].ip,
-                        lastSeen: allUsers[0].lastSeen,
-                        lastResponseAt: allUsers[0].lastResponseAt,
-                        now: now,
-                        sevenSecondsAgo: sevenSecondsAgo
-                    });
-                }
-                
-                // Aktif kullanıcıları say - IP bazında unique (1 IP = 1 kullanıcı)
-                // Son 7 saniye içinde lastResponseAt veya lastSeen güncellenen kullanıcılar
-                // Distinct IP adresi sayısını alıyoruz
-                const activeUsersQuery = await db.collection('userSessions').find({
+                const eightSecondsAgo = new Date(now.getTime() - 8 * 1000);
+
+                const activeFilter = {
                     $or: [
                         { lastResponseAt: { $gte: sevenSecondsAgo } },
-                        { lastSeen: { $gte: sevenSecondsAgo } }
+                        {
+                            $and: [
+                                { lastResponseAt: { $exists: false } },
+                                { lastSeen: { $gte: sevenSecondsAgo } }
+                            ]
+                        }
                     ]
-                }).toArray();
-                
-                // Unique IP adreslerini say
-                const uniqueIPs = new Set(activeUsersQuery.map(u => u.ip));
-                const activeUsers = uniqueIPs.size;
-                
+                };
+
+                const activeUsers = await db.collection('userSessions').countDocuments(activeFilter);
                 console.log('✅ Aktif kullanıcı sayısı (7 saniye içinde):', activeUsers);
-                
-                // 7 saniyeden eski kayıtları temizle (kullanıcı artık online değil)
-                const eightSecondsAgo = new Date(now.getTime() - 8 * 1000);
-                const deleteResult = await db.collection('userSessions').deleteMany({
+
+                const pruneFilter = {
                     $and: [
-                        { lastResponseAt: { $lt: eightSecondsAgo } },
-                        { lastSeen: { $lt: eightSecondsAgo } }
+                        { lastSeen: { $lt: eightSecondsAgo } },
+                        {
+                            $or: [
+                                { lastResponseAt: { $lt: eightSecondsAgo } },
+                                { lastResponseAt: { $exists: false } }
+                            ]
+                        }
                     ]
-                });
-                
+                };
+
+                const deleteResult = await db.collection('userSessions').deleteMany(pruneFilter);
                 if (deleteResult.deletedCount > 0) {
                     console.log('🗑️ Offline kullanıcılar temizlendi (7+ saniye heartbeat yok):', deleteResult.deletedCount);
                 }
 
-                // Stats collection'ını güncelle
                 const statsResult = await db.collection('stats').updateOne(
                     { _id: 'current' },
                     {
