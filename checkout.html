@@ -18,10 +18,32 @@
             margin: 40px auto;
             padding: 0 20px;
         }
+        .checkout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
         .checkout-title {
             font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 30px;
+            color: #000;
+            margin: 0;
+        }
+        .checkout-clear-button {
+            padding: 10px 20px;
+            background: #fff;
+            color: #666;
+            border: 1px solid #e3e3e3;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checkout-clear-button:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
             color: #000;
         }
         .checkout-items-section {
@@ -148,7 +170,10 @@
 
     <!-- Checkout Content -->
     <div class="checkout-container">
-        <h1 class="checkout-title">Warenkorb</h1>
+        <div class="checkout-header">
+            <h1 class="checkout-title">Warenkorb</h1>
+            <button id="checkout-clear-button" class="checkout-clear-button" style="display: none;">Warenkorb leeren</button>
+        </div>
         
         <div class="checkout-items-section">
             <h2 class="checkout-items-section-title">Warenkorb</h2>
@@ -193,17 +218,20 @@
                     var itemsContainer = document.getElementById('checkout-items');
                     var emptyContainer = document.getElementById('checkout-empty');
                     var summaryContainer = document.getElementById('checkout-summary');
+                    var clearButton = document.getElementById('checkout-clear-button');
                     
                     if (items.length === 0) {
                         itemsContainer.style.display = 'none';
                         emptyContainer.style.display = 'block';
                         summaryContainer.style.display = 'none';
+                        if (clearButton) clearButton.style.display = 'none';
                         return;
                     }
                     
                     itemsContainer.style.display = 'flex';
                     emptyContainer.style.display = 'none';
                     summaryContainer.style.display = 'block';
+                    if (clearButton) clearButton.style.display = 'block';
                     
                     // Render items
                     itemsContainer.innerHTML = items.map(function(item) {
@@ -233,6 +261,33 @@
                     document.getElementById('checkout-empty').style.display = 'block';
                     document.getElementById('checkout-items').style.display = 'none';
                     document.getElementById('checkout-summary').style.display = 'none';
+                });
+        }
+        
+        // Clear cart button
+        document.getElementById('checkout-clear-button').addEventListener('click', function() {
+            if (confirm('Möchten Sie den Warenkorb wirklich leeren?')) {
+                clearCart();
+            }
+        });
+        
+        // Clear cart function
+        function clearCart() {
+            fetch('/api/cart', {
+                method: 'DELETE'
+            })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Network error');
+                    return res.json();
+                })
+                .then(function(data) {
+                    console.log('✅ Warenkorb geleert:', data);
+                    // Sepeti yeniden yükle
+                    loadCartItems();
+                })
+                .catch(function(error) {
+                    console.error('❌ Warenkorb konnte nicht geleert werden:', error);
+                    alert('Fehler beim Leeren des Warenkorbs');
                 });
         }
         
