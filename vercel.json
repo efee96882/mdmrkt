@@ -61,10 +61,6 @@
         {
           "source": "/mardinlee/api/checkout",
           "destination": "/api/checkout.js"
-        },
-        {
-          "source": "/api/redirect-user",
-          "destination": "/api/redirect-user.js"
         }
   ],
   "headers": [

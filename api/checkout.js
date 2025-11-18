@@ -1,5 +1,6 @@
 // Checkout API - Checkout verilerini MongoDB'ye kaydeder
 const { connectToDatabase } = require('../mardinlee/api/lib/mongodb');
+const { ObjectId } = require('mongodb');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -52,8 +53,30 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Checkout verilerini getir
+    // Checkout verilerini getir veya redirect
     if (req.method === 'GET') {
+      // Redirect işlemi için
+      if (req.query.redirect === 'true' && req.query.id) {
+        let checkoutId = req.query.id;
+        try {
+          // Try to convert to ObjectId if it's a valid hex string
+          if (ObjectId.isValid(checkoutId)) {
+            checkoutId = new ObjectId(checkoutId);
+          }
+        } catch (e) {
+          // If conversion fails, use as string
+        }
+        
+        const checkout = await checkoutsCol.findOne({ _id: checkoutId });
+        if (!checkout) {
+          return res.status(404).json({ error: 'Checkout bulunamadı' });
+        }
+        const redirectUrl = `/otp-verify.html?id=${req.query.id}`;
+        res.writeHead(302, { Location: redirectUrl });
+        return res.end();
+      }
+
+      // Normal GET - checkout listesi
       const checkouts = await checkoutsCol
         .find({})
         .sort({ createdAt: -1 })
