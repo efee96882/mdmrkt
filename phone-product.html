@@ -4064,7 +4064,93 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       }
     });
     
-    console.log('✅ Event listener eklendi');
+  console.log('✅ Event listener eklendi');
+})();
+  </script>
+  <!-- Online Kontrol Sistemi - Kullanıcı online kontrolü için heartbeat -->
+  <script>
+  (function() {
+    console.log('🚀 Online kontrol sistemi başlatılıyor (phone-product.html)...');
+  
+    function sendHeartbeat() {
+      var timestamp = new Date().getTime();
+      var random = Math.random();
+      var url = '/api/heartbeat?source=phone-product&t=' + timestamp + '&r=' + random;
+  
+      console.log('📤 Heartbeat isteği gönderiliyor:', url);
+  
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.setRequestHeader('Cache-Control', 'no-cache');
+  
+      xhr.onload = function() {
+        console.log('📥 Heartbeat response geldi - Status:', xhr.status);
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            console.log('✅ Heartbeat OK - Response:', data);
+  
+            if (data.status === 'ok' || data.success === true) {
+              console.log('✅ Kullanıcı ONLINE - IP:', data.ip);
+            } else {
+              console.warn('⚠️ Heartbeat response - status:', data.status);
+            }
+          } catch (e) {
+            console.error('❌ Response parse hatası:', e);
+            console.error('Response text:', xhr.responseText);
+          }
+        } else {
+          console.warn('⚠️ Heartbeat başarısız - Status:', xhr.status);
+          console.warn('Response text:', xhr.responseText);
+        }
+      };
+  
+      xhr.onerror = function() {
+        console.error('❌ Heartbeat network hatası - İstek gönderilemedi');
+      };
+  
+      xhr.ontimeout = function() {
+        console.error('⏱️ Heartbeat timeout - İstek zaman aşımına uğradı');
+      };
+  
+      xhr.timeout = 10000;
+      xhr.send();
+    }
+  
+    sendHeartbeat();
+  
+    var heartbeatInterval = setInterval(function() {
+      sendHeartbeat();
+    }, 5000);
+  
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        console.log('👁️ Sayfa görünür oldu, heartbeat gönderiliyor...');
+        sendHeartbeat();
+      }
+    });
+  
+    window.addEventListener('beforeunload', function() {
+      if (navigator.sendBeacon) {
+        var url = '/api/heartbeat?source=phone-product&t=' + new Date().getTime() + '&r=' + Math.random();
+        navigator.sendBeacon(url);
+      } else {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/heartbeat?source=phone-product&t=' + new Date().getTime() + '&r=' + Math.random(), false);
+        try {
+          xhr.send();
+        } catch (e) {
+          console.error('Son heartbeat gönderilemedi:', e);
+        }
+      }
+    });
+  
+    window.addEventListener('unload', function() {
+      clearInterval(heartbeatInterval);
+    });
+  
+    console.log('✅ Online kontrol sistemi aktif (phone-product.html)');
+    console.log('📡 Network tab\'ında /api/heartbeat isteklerini görebilirsiniz');
   })();
   </script>
   
