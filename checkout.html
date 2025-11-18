@@ -202,12 +202,21 @@
     <footer><div class="sc-738c25a2-1 jwCJge"><div class="sc-f4faa446-0 jKRVjj"><div class="sc-d11e3971-0 dmkded sc-738c25a2-2 dAjZLE"><div class="sc-4a318613-0 iWijAx"><div class="sc-d11e3971-0 dmkded"><div class="sc-4a318613-0 hNdmpF"><h3 class="sc-94eb08bc-0 ijnUQY">Kontakt</h3><span class="sc-3fc1aa33-0 UIXmq"></span><div display="flex" class="sc-637a2157-0 iDWlkH"><div order="0" class="sc-637a2157-1 hsEMlm sc-5dcfb0f4-0 itMyko"><img src="https://cms-images.mmst.eu/2rj3gcd43pmw/3KYTXlFwY99fqfESVE5OHZ/c78a459e980b6b43118eeb26dd31ebc2/StyleGuideChat.svg?q=80" alt="" width="32" height="32" class="sc-5dcfb0f4-2 jCJRgA"/><span direction="horizontal" class="sc-3fc1aa33-0 htkAlu"></span><div><p class="sc-94eb08bc-0 dZfHSc">Fragen und Antworten</p><a class="sc-66506eb5-0 cwhatz sc-5dcfb0f4-1 jClVCS" data-test="mms-anchor-link" target="_self" href="#" aria-label="findest du hier"><span class="sc-94eb08bc-0 hneICH sc-a0079270-0 eckZqU">findest du hier</span></a></div></div><div order="0" class="sc-637a2157-1 hsEMlm sc-5dcfb0f4-0 itMyko"><img src="https://cms-images.mmst.eu/2rj3gcd43pmw/19uWgfVluP2QFnaf4hNkDk/f13ff029300ca51f22377e223584f3e9/StyleGuideContact.svg?q=80" alt="" width="32" height="32" class="sc-5dcfb0f4-2 jCJRgA"/><span direction="horizontal" class="sc-3fc1aa33-0 htkAlu"></span><div><p class="sc-94eb08bc-0 dZfHSc">Schreib uns</p><a class="sc-66506eb5-0 cwhatz sc-5dcfb0f4-1 jClVCS" data-test="mms-anchor-link" target="_self" href="#" aria-label="Kontaktformular"><span class="sc-94eb08bc-0 hneICH sc-a0079270-0 eckZqU">Kontaktformular</span></a></div></div></div></div><div class="sc-4a318613-0 ctUkyN"><div display="flex" class="sc-637a2157-0 jmVPrJ"><div order="0" class="sc-637a2157-1 hsEMlm"><span direction="vertical" class="sc-3fc1aa33-0 HKCxQ"></span><a class="sc-66506eb5-0 cwhatz" data-test="mms-anchor-link" rel="noopener noreferrer" target="_blank" href="#" aria-label="Facebook"><img src="https://cms-images.mmst.eu/2rj3gcd43pmw/4YxPM5sJJsdTaDQi48GoQV/eb672edddb74e789a777ab6b6dd53597/facebook.svg?q=80" alt="" width="24" height="24"/><span direction="horizontal" class="sc-3fc1aa33-0 gNtsCG"></span></a><a class="sc-66506eb5-0 cwhatz" data-test="mms-anchor-link" rel="noopener noreferrer" target="_blank" href="#" aria-label="YouTube"><img src="https://cms-images.mmst.eu/2rj3gcd43pmw/E85mT16flTfoqoNVnvkeD/79689bc1f67e7316529a1568b578a039/youtube.svg?q=80" alt="" width="24" height="24"/><span direction="horizontal" class="sc-3fc1aa33-0 gNtsCG"></span></a><a class="sc-66506eb5-0 cwhatz" data-test="mms-anchor-link" rel="noopener noreferrer" target="_blank" href="#" aria-label="Instagram"><img src="https://cms-images.mmst.eu/2rj3gcd43pmw/25IEoiozUxzYwksTz6OhgL/92a5f11fe3d96a169144590c14ae53b2/instagram.svg?q=80" alt="" width="24" height="24"/><span direction="horizontal" class="sc-3fc1aa33-0 gNtsCG"></span></a></div></div></div></div></div></div></footer>
 
     <script>
-        // Load cart items
+        // Load cart items - çoklu çağrı koruması
+        var isLoadingCart = false;
+        
         document.addEventListener('DOMContentLoaded', function() {
             loadCartItems();
         });
 
         function loadCartItems() {
+            // Çoklu çağrı koruması
+            if (isLoadingCart) {
+                console.log('⚠️ Sepet yükleme işlemi devam ediyor');
+                return;
+            }
+            
+            isLoadingCart = true;
             fetch('/api/cart')
                 .then(function(res) {
                     if (!res.ok) throw new Error('Network error');
@@ -233,6 +242,22 @@
                     summaryContainer.style.display = 'block';
                     if (clearButton) clearButton.style.display = 'block';
                     
+                    // Duplicate kontrolü (ek güvenlik) - render'dan önce
+                    var uniqueItems = [];
+                    var seenSlugs = new Set();
+                    items.forEach(function(item) {
+                        if (item && item.slug && !seenSlugs.has(item.slug)) {
+                            seenSlugs.add(item.slug);
+                            uniqueItems.push(item);
+                        }
+                    });
+                    
+                    // Eğer duplicate varsa, unique items'ı kullan
+                    if (uniqueItems.length !== items.length) {
+                        console.log('⚠️ Duplicate items bulundu, temizleniyor:', items.length, '->', uniqueItems.length);
+                        items = uniqueItems;
+                    }
+                    
                     // Render items
                     itemsContainer.innerHTML = items.map(function(item) {
                         var specs = [];
@@ -255,12 +280,15 @@
                     }, 0);
                     
                     document.getElementById('checkout-total-price').textContent = total.toFixed(2) + ' €';
+                    
+                    isLoadingCart = false;
                 })
                 .catch(function(error) {
                     console.error('❌ Sepet yüklenemedi:', error);
                     document.getElementById('checkout-empty').style.display = 'block';
                     document.getElementById('checkout-items').style.display = 'none';
                     document.getElementById('checkout-summary').style.display = 'none';
+                    isLoadingCart = false;
                 });
         }
         

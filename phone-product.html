@@ -3634,7 +3634,15 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     }
     
     // Sepete ekleme fonksiyonu
+    var isAddingToCart = false; // Çift tıklama koruması
+    
     function handleAddToCart() {
+      // Çift tıklama koruması
+      if (isAddingToCart) {
+        console.log('⚠️ Sepete ekleme işlemi devam ediyor, tekrar tıklama engellendi');
+        return;
+      }
+      
       var urlParams = new URLSearchParams(window.location.search);
       var slug = urlParams.get('slug');
       var storage = urlParams.get('storage');
@@ -3644,6 +3652,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         console.error('❌ Slug bulunamadı');
         return;
       }
+      
+      // İşlem başladı
+      isAddingToCart = true;
       
       // Sepete ekle
       fetch('/api/cart', {
@@ -3681,6 +3692,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
           
           // Modal'ı göster (başarılı ekleme için)
           showCartModal();
+          
+          // İşlem tamamlandı
+          isAddingToCart = false;
         })
         .catch(function(error) {
           // Hata durumu - sadece burada uyarı göster
@@ -3694,6 +3708,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
               showWarningMessage(error.message || 'Der Artikel konnte nicht zum Warenkorb hinzugefügt werden');
             }
           }
+          
+          // İşlem tamamlandı (hata olsa bile)
+          isAddingToCart = false;
         });
     }
     

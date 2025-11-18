@@ -134,8 +134,19 @@ module.exports = async (req, res) => {
       // Sepet sayısını getir
       if (action === 'count') {
         const cart = await cartsCol.findOne({ userId: userId });
-        const count = cart ? cart.items.length : 0;
-        return res.status(200).json({ count: count });
+        if (!cart || !cart.items || cart.items.length === 0) {
+          return res.status(200).json({ count: 0 });
+        }
+        
+        // Duplicate kontrolü - unique slug sayısı
+        const uniqueSlugs = new Set();
+        cart.items.forEach(function(item) {
+          if (item && item.slug) {
+            uniqueSlugs.add(item.slug);
+          }
+        });
+        
+        return res.status(200).json({ count: uniqueSlugs.size });
       }
 
       // Sepeti getir
@@ -144,9 +155,36 @@ module.exports = async (req, res) => {
         return res.status(200).json({ items: [], count: 0 });
       }
 
+      // Duplicate kontrolü - aynı slug'a sahip item'ları temizle (en son eklenen kalır)
+      let items = cart.items || [];
+      const uniqueItems = [];
+      const seenSlugs = new Set();
+      
+      // Ters sırada döngü - en son eklenenler önce gelsin
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        if (item && item.slug && !seenSlugs.has(item.slug)) {
+          seenSlugs.add(item.slug);
+          uniqueItems.unshift(item); // Başa ekle (sırayı koru)
+        }
+      }
+      
+      // Eğer duplicate varsa, sepeti temizle ve unique items'ı kaydet
+      if (uniqueItems.length !== items.length) {
+        await cartsCol.updateOne(
+          { userId: userId },
+          { 
+            $set: { 
+              items: uniqueItems,
+              updatedAt: new Date()
+            }
+          }
+        );
+      }
+
       return res.status(200).json({ 
-        items: cart.items || [], 
-        count: cart.items ? cart.items.length : 0 
+        items: uniqueItems, 
+        count: uniqueItems.length 
       });
     }
 
