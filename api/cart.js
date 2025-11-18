@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
 
     // Sepete ekleme
     if (req.method === 'POST') {
-      const { slug, storage } = req.body;
+      const { slug, storage, color } = req.body;
       
       if (!slug) {
         return res.status(400).json({ error: 'Slug gerekli' });
@@ -77,11 +77,24 @@ module.exports = async (req, res) => {
       const selectedStorage = storage || (phone.storageOptions && phone.storageOptions[0] ? phone.storageOptions[0].storage : '');
       const storageOption = phone.storageOptions ? phone.storageOptions.find(opt => opt.storage === selectedStorage) : null;
       
+      // Renk bilgisini al
+      let selectedColor = null;
+      let colorImageUrl = phone.imageUrl; // Varsayılan olarak ana resim
+      
+      if (color && phone.colorOptions && phone.colorOptions.length > 0) {
+        const colorOption = phone.colorOptions.find(opt => opt.name === color);
+        if (colorOption) {
+          selectedColor = colorOption.name;
+          colorImageUrl = colorOption.imageUrl || phone.imageUrl;
+        }
+      }
+      
       const cartItem = {
         slug: slug,
         name: phone.name || phone.baseName,
-        imageUrl: phone.imageUrl,
+        imageUrl: colorImageUrl, // Seçilen renk fotoğrafı veya varsayılan
         storage: selectedStorage,
+        color: selectedColor, // Seçilen renk adı
         price: storageOption ? storageOption.discountedPrice : phone.discountedPrice,
         addedAt: new Date()
       };

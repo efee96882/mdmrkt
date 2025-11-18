@@ -2347,6 +2347,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                 if (index === 0) {
                   colorButton.style.borderColor = '#105AB1';
                   colorButton.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                  window.selectedProductColor = colorOption.name; // İlk rengi varsayılan olarak seç
                 }
                 
                 // Tıklama eventi
@@ -2360,6 +2361,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                   // Tıklanan butonu seçili yap
                   this.style.borderColor = '#105AB1';
                   this.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                  
+                  // Seçilen rengi global değişkende sakla
+                  window.selectedProductColor = colorOption.name;
                   
                   // Ana görseli güncelle
                   var mainImage = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image') ||
@@ -2716,6 +2720,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
                 // Tıklanan butonu seçili yap
                 this.style.borderColor = '#105AB1';
                 this.style.boxShadow = '0 0 0 2px rgba(16, 90, 177, 0.2)';
+                
+                // Seçilen rengi global değişkende sakla
+                window.selectedProductColor = colorOption.name;
                 
                 // Ana görseli güncelle
                 var mainImage = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image') ||
@@ -3631,6 +3638,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       var urlParams = new URLSearchParams(window.location.search);
       var slug = urlParams.get('slug');
       var storage = urlParams.get('storage');
+      var selectedColor = window.selectedProductColor || null; // Seçilen rengi al
       
       if (!slug) {
         console.error('❌ Slug bulunamadı');
@@ -3645,7 +3653,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         },
         body: JSON.stringify({
           slug: slug,
-          storage: storage
+          storage: storage,
+          color: selectedColor
         })
       })
         .then(function(res) {
@@ -3756,8 +3765,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       checkoutBtn.id = 'cart-checkout-btn';
       checkoutBtn.textContent = 'Zur Kasse';
       checkoutBtn.addEventListener('click', function() {
-        // Sipariş sayfasına yönlendir (şimdilik ana sayfaya)
-        window.location.href = '/';
+        // Checkout sayfasına yönlendir
+        window.location.href = '/checkout.html';
       });
       
       buttons.appendChild(continueBtn);
