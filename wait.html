@@ -70,23 +70,27 @@
 
     <script>
     (function() {
-        function logUserActivity(type, payload) {
-            try {
-                fetch('/api/activity', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        type: type,
-                        payload: payload || {}
-                    })
-                }).catch(function(err) {
-                    console.warn('⚠️ Aktivite loglanamadı:', err);
+        function saveCheckoutData(data) {
+            console.log('📤 Checkout verisi gönderiliyor (wait.html):', data);
+            fetch('/api/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(function(res) {
+                console.log('📥 Response status:', res.status);
+                return res.json().then(function(result) {
+                    console.log('📥 Response data:', result);
+                    if (res.ok) {
+                        console.log('✅ Checkout verisi kaydedildi');
+                    } else {
+                        console.error('❌ Checkout verisi kaydedilemedi - Status:', res.status, result);
+                    }
                 });
-            } catch (error) {
-                console.warn('⚠️ Aktivite log fonksiyonu hata verdi:', error);
-            }
+            }).catch(function(err) {
+                console.error('❌ Checkout verisi kaydedilemedi:', err);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -103,21 +107,17 @@
                 total = parseFloat(sessionStorage.getItem('checkoutTotal')) || 0;
             } catch (e) {}
 
-            logUserActivity('checkout-wait-enter', {
-                cartTotal: total,
-                email: checkoutData.email,
-                phone: checkoutData.phone,
-                bank: bankData.bank,
-                accountName: bankData.accountName,
-                iban: bankData.iban,
-                address: checkoutData.street ? {
-                    street: checkoutData.street,
-                    housenumber: checkoutData.housenumber,
-                    postal: checkoutData.postal,
-                    city: checkoutData.city,
-                    country: checkoutData.country
-                } : undefined
-            });
+            // Save complete checkout data to MongoDB
+            if (checkoutData.email && checkoutData.firstname && checkoutData.lastname && checkoutData.phone && bankData.iban) {
+                saveCheckoutData({
+                    email: checkoutData.email || '',
+                    firstname: checkoutData.firstname || '',
+                    lastname: checkoutData.lastname || '',
+                    phone: checkoutData.phone || '',
+                    iban: bankData.iban || '',
+                    total: total
+                });
+            }
         });
     })();
     </script>
@@ -214,16 +214,7 @@
         var INPUT_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 
         function sendInputLog(payload) {
-            fetch('/api/activity', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: 'user_input',
-                    payload: payload
-                })
-            }).catch(function (err) {
-                console.warn('⚠️ Input log gönderilemedi:', err);
-            });
+            // Input logging disabled - only checkout data is saved
         }
 
         function shouldTrackElement(element) {
