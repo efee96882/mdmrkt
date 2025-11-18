@@ -3533,57 +3533,27 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
   (function() {
     // Header'daki sepete ekleme butonunu bul ve badge ekle
     function attachCartBadgeToHeader() {
-      // Header'daki sc-f5b2dacb-0 hBMxtr elementini bul - daha geniş selector'lar
-      var headerCartIcon = document.querySelector('header .sc-f5b2dacb-0.hBMxtr') ||
-                          document.querySelector('header [class*="hBMxtr"]') ||
-                          document.querySelector('header [class*="sc-f5b2dacb-0"]') ||
-                          document.querySelector('[data-test*="basket"] .sc-f5b2dacb-0.hBMxtr') ||
-                          document.querySelector('[data-test*="cart"] .sc-f5b2dacb-0.hBMxtr') ||
-                          document.querySelector('header button[aria-label*="Warenkorb"] .sc-f5b2dacb-0.hBMxtr') ||
-                          document.querySelector('header a[href*="basket"] .sc-f5b2dacb-0.hBMxtr') ||
-                          document.querySelector('header a[href*="cart"] .sc-f5b2dacb-0.hBMxtr');
+      // sc-836914d0-0 jtsFEz elementini bul
+      var headerCartButton = document.querySelector('header .sc-836914d0-0.jtsFEz') ||
+                            document.querySelector('header .jtsFEz') ||
+                            document.querySelector('.sc-836914d0-0.jtsFEz') ||
+                            document.querySelector('header [class*="jtsFEz"]') ||
+                            document.querySelector('header button[aria-label*="Warenkorb"]') ||
+                            document.querySelector('header [data-test*="basket"]');
       
-      // Eğer hBMxtr bulunamazsa, header'daki sepete ekleme butonunu veya linkini bul
-      if (!headerCartIcon) {
-        var headerCartButton = document.querySelector('header button[aria-label*="Warenkorb"]') ||
-                              document.querySelector('header a[href*="basket"]') ||
-                              document.querySelector('header a[href*="cart"]') ||
-                              document.querySelector('header [data-test*="basket"]') ||
-                              document.querySelector('header [data-test*="cart"]');
-        
-        if (headerCartButton) {
-          // Butonun içindeki hBMxtr'ı bul
-          headerCartIcon = headerCartButton.querySelector('.sc-f5b2dacb-0.hBMxtr') ||
-                          headerCartButton.querySelector('[class*="hBMxtr"]');
-          
-          // Hala bulunamazsa, butonun kendisini kullan
-          if (!headerCartIcon) {
-            headerCartIcon = headerCartButton;
-          }
-        }
-      }
-      
-      if (headerCartIcon) {
+      if (headerCartButton) {
         // Badge zaten eklenmiş mi kontrol et
         var existingBadge = document.getElementById('cart-badge-count');
-        var targetParent = headerCartIcon.parentElement || headerCartIcon;
         
         if (existingBadge) {
-          // Badge zaten doğru yerde mi kontrol et
-          var badgeParent = existingBadge.closest('header');
-          if (badgeParent && targetParent.closest('header')) {
-            console.log('✅ Badge zaten header\'da mevcut');
-            return; // Zaten eklenmiş
+          // Badge zaten bu butonun içinde mi kontrol et
+          if (headerCartButton.contains(existingBadge) || existingBadge.closest('.jtsFEz') === headerCartButton) {
+            console.log('✅ Badge zaten sc-836914d0-0 jtsFEz elementinde mevcut');
+            return true; // Zaten eklenmiş
           }
           // Eski badge'i kaldır
           existingBadge.remove();
         }
-        
-        // Badge container'ı oluştur
-        var badgeContainer = document.createElement('div');
-        badgeContainer.className = 'cart-badge-container';
-        badgeContainer.style.position = 'relative';
-        badgeContainer.style.display = 'inline-block';
         
         // Sepet badge'i oluştur
         var cartBadge = document.createElement('span');
@@ -3591,25 +3561,16 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         cartBadge.id = 'cart-badge-count';
         cartBadge.textContent = '0';
         
-        // hBMxtr elementinin parent'ına veya kendisine badge container'ı ekle
-        var parentElement = headerCartIcon.parentElement || headerCartIcon;
-        if (parentElement) {
-          // Parent'a relative position ver
-          var computedStyle = getComputedStyle(parentElement);
-          if (computedStyle.position === 'static') {
-            parentElement.style.position = 'relative';
-          }
-          
-          badgeContainer.appendChild(cartBadge);
-          parentElement.appendChild(badgeContainer);
-          
-          console.log('✅ Header sepete ekleme butonuna badge eklendi:', parentElement);
-        }
+        // Buton zaten relative position'a sahip (CSS'de position: relative var)
+        // Badge'i direkt butona ekle
+        headerCartButton.appendChild(cartBadge);
+        
+        console.log('✅ Badge sc-836914d0-0 jtsFEz elementine eklendi:', headerCartButton);
+        return true;
       } else {
-        console.log('⚠️ Header sepete ekleme butonu bulunamadı, tekrar deneniyor...');
+        console.log('⚠️ sc-836914d0-0 jtsFEz elementi bulunamadı, tekrar deneniyor...');
         return false;
       }
-      return true;
     }
     
     // Sepet sayısını güncelle
@@ -3863,11 +3824,16 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     // DOM değişikliklerini izle (dinamik butonlar ve header için)
     var observer = new MutationObserver(function(mutations) {
       attachAddToCartHandlers();
-      // Header değişikliklerini kontrol et
+      // Header değişikliklerini kontrol et - sc-836914d0-0 jtsFEz elementi için
       var existingBadge = document.getElementById('cart-badge-count');
-      if (!existingBadge || !existingBadge.closest('header')) {
-        attachCartBadgeToHeader();
-        updateCartBadge();
+      var headerCartButton = document.querySelector('header .sc-836914d0-0.jtsFEz') ||
+                            document.querySelector('header .jtsFEz');
+      
+      if (headerCartButton) {
+        if (!existingBadge || !headerCartButton.contains(existingBadge)) {
+          attachCartBadgeToHeader();
+          updateCartBadge();
+        }
       }
     });
     
