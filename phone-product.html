@@ -1448,7 +1448,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     .sc-f3ef82d2-0,
     .enDyDJ,
     .sc-28072e66-2,
-    .lbLdin {
+    .lbLdin,
+    .sc-53fc9e94-0,
+    .jfQyMl {
       display: none !important;
     }
     
@@ -3280,6 +3282,51 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         setTimeout(function() {
           removeElement();
         }, 500);
+      }
+    }
+  })();
+  </script>
+  
+  <!-- sc-53fc9e94-0 jfQyMl elementini kaldır -->
+  <script>
+  (function() {
+    function removeJfQyMlElement() {
+      var element = document.querySelector('.sc-53fc9e94-0.jfQyMl') ||
+                    document.querySelector('.jfQyMl') ||
+                    document.querySelector('.sc-53fc9e94-0') ||
+                    document.querySelector('[class*="sc-53fc9e94-0"]');
+      
+      if (element) {
+        element.remove();
+        console.log('✅ sc-53fc9e94-0 jfQyMl elementi kaldırıldı');
+        return true;
+      }
+      return false;
+    }
+    
+    // Sayfa yüklendiğinde dene
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        if (!removeJfQyMlElement()) {
+          // Eğer hemen bulunamazsa, biraz bekle ve tekrar dene
+          setTimeout(function() {
+            if (!removeJfQyMlElement()) {
+              setTimeout(function() {
+                removeJfQyMlElement();
+              }, 500);
+            }
+          }, 300);
+        }
+      });
+    } else {
+      if (!removeJfQyMlElement()) {
+        setTimeout(function() {
+          if (!removeJfQyMlElement()) {
+            setTimeout(function() {
+              removeJfQyMlElement();
+            }, 500);
+          }
+        }, 300);
       }
     }
   })();
