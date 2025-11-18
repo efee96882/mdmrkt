@@ -1450,7 +1450,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     .sc-28072e66-2,
     .lbLdin,
     .sc-53fc9e94-0,
-    .jfQyMl {
+    .jfQyMl,
+    [data-test="mms-skeleton-block-item"],
+    .mms-skeleton-block-item {
       display: none !important;
     }
     
@@ -1606,6 +1608,110 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         padding-bottom: 80px;
       }
     }
+    
+    /* Sepet badge stili */
+    .cart-badge {
+      position: absolute;
+      bottom: -6px;
+      left: -6px;
+      background: #f91f1f;
+      color: #ffffff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-family: NotoSansDisplay, Arial, sans-serif;
+      z-index: 10;
+      min-width: 20px;
+      padding: 0;
+      line-height: 1;
+      border: 2px solid #ffffff;
+    }
+    
+    .cart-badge.hidden {
+      display: none;
+    }
+    
+    /* Sepet badge için SVG container */
+    .cart-badge-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Sepete ekleme modal */
+    #cart-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #cart-modal.show {
+      display: flex;
+    }
+    
+    #cart-modal-content {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    #cart-modal-content h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #000000;
+      font-family: NotoSansDisplay, Arial, sans-serif;
+    }
+    
+    #cart-modal-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    #cart-modal-buttons button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: NotoSansDisplay, Arial, sans-serif;
+    }
+    
+    #cart-continue-btn {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #000000;
+    }
+    
+    #cart-continue-btn:hover {
+      background: #f5f5f5;
+    }
+    
+    #cart-checkout-btn {
+      background: #000000;
+      color: #ffffff;
+    }
+    
+    #cart-checkout-btn:hover {
+      background: #333333;
+    }
   </style>
 
   <!-- Dinamik telefon bilgileri ve storage seçenekleri -->
@@ -1693,7 +1799,38 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       
       var buttonEmptySpan = document.createElement('span');
       buttonEmptySpan.className = 'sc-f5b2dacb-0 hBMxtr';
-      addToCartButton.appendChild(buttonEmptySpan);
+      
+      // Sepet badge container'ı oluştur
+      var badgeContainer = document.createElement('div');
+      badgeContainer.className = 'cart-badge-container';
+      badgeContainer.style.position = 'relative';
+      
+      // SVG ikonu ekle (sepet ikonu) - hBMxtr içine
+      var cartSvgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      cartSvgIcon.setAttribute('width', '24');
+      cartSvgIcon.setAttribute('height', '24');
+      cartSvgIcon.setAttribute('viewBox', '0 0 24 24');
+      cartSvgIcon.style.cssText = 'width: 100%; height: 100%; fill: currentColor;';
+      var cartSvgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      cartSvgPath.setAttribute('d', 'M21.5 4H5.72l-.56-1a2 2 0 0 0-1.74-1H2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h.92l4.28 7.49a2.2 2.2 0 0 0 .27.35l-1.86 3.7a.77.77 0 0 0 0 .71l.22.38A.76.76 0 0 0 7 17h12.5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H8.62l1-2.09a2.74 2.74 0 0 0 .64.09h6.23A2.94 2.94 0 0 0 19 11.49l2.35-4.13A4.76 4.76 0 0 0 22 5v-.5a.5.5 0 0 0-.5-.5m-4.22 6.5a1 1 0 0 1-.75.5H10.3a1 1 0 0 1-.86-.5L6.87 6h12.92c-.05.12-.09.25-.15.37ZM18 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2M8 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2');
+      cartSvgIcon.appendChild(cartSvgPath);
+      buttonEmptySpan.appendChild(cartSvgIcon);
+      
+      // Sepet badge'i oluştur
+      var cartBadge = document.createElement('span');
+      cartBadge.className = 'cart-badge hidden';
+      cartBadge.id = 'cart-badge-count';
+      cartBadge.textContent = '0';
+      
+      badgeContainer.appendChild(buttonEmptySpan);
+      badgeContainer.appendChild(cartBadge);
+      
+      addToCartButton.appendChild(badgeContainer);
+      
+      // Sepete ekleme butonuna click handler ekle
+      addToCartButton.addEventListener('click', function() {
+        handleAddToCart();
+      });
       
       // "inkl. MwSt. versandkostenfrei" yazısı - butonun üstüne
       var taxInfo = document.createElement('p');
@@ -3329,6 +3466,251 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         }, 300);
       }
     }
+  })();
+  </script>
+  
+  <!-- mms-skeleton-block-item elementini kaldır -->
+  <script>
+  (function() {
+    function removeSkeletonBlockItem() {
+      var element = document.querySelector('[data-test="mms-skeleton-block-item"]') ||
+                    document.querySelector('.mms-skeleton-block-item') ||
+                    document.querySelector('[class*="skeleton-block-item"]');
+      
+      if (element) {
+        element.remove();
+        console.log('✅ mms-skeleton-block-item elementi kaldırıldı');
+        return true;
+      }
+      return false;
+    }
+    
+    // Sayfa yüklendiğinde dene
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        if (!removeSkeletonBlockItem()) {
+          // Eğer hemen bulunamazsa, biraz bekle ve tekrar dene
+          setTimeout(function() {
+            if (!removeSkeletonBlockItem()) {
+              setTimeout(function() {
+                removeSkeletonBlockItem();
+              }, 500);
+            }
+          }, 300);
+        }
+      });
+    } else {
+      if (!removeSkeletonBlockItem()) {
+        setTimeout(function() {
+          if (!removeSkeletonBlockItem()) {
+            setTimeout(function() {
+              removeSkeletonBlockItem();
+            }, 500);
+          }
+        }, 300);
+      }
+    }
+  })();
+  </script>
+  
+  <!-- Sepete ekleme fonksiyonu ve modal -->
+  <script>
+  (function() {
+    // Sepet sayısını güncelle
+    function updateCartBadge() {
+      fetch('/api/cart?action=count')
+        .then(function(res) {
+          if (!res.ok) throw new Error('Network error');
+          return res.json();
+        })
+        .then(function(data) {
+          var badge = document.getElementById('cart-badge-count');
+          if (badge) {
+            var count = data.count || 0;
+            badge.textContent = count;
+            if (count > 0) {
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          }
+        })
+        .catch(function(error) {
+          console.error('❌ Sepet sayısı alınamadı:', error);
+        });
+    }
+    
+    // Sepete ekleme fonksiyonu
+    function handleAddToCart() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var slug = urlParams.get('slug');
+      var storage = urlParams.get('storage');
+      
+      if (!slug) {
+        console.error('❌ Slug bulunamadı');
+        return;
+      }
+      
+      // Sepete ekle
+      fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          slug: slug,
+          storage: storage
+        })
+      })
+        .then(function(res) {
+          if (!res.ok) {
+            return res.json().then(function(data) {
+              throw new Error(data.error || 'Sepete eklenemedi');
+            });
+          }
+          return res.json();
+        })
+        .then(function(data) {
+          console.log('✅ Ürün sepete eklendi:', data);
+          
+          // Sepet badge'ini güncelle
+          updateCartBadge();
+          
+          // Modal'ı göster
+          showCartModal();
+        })
+        .catch(function(error) {
+          console.error('❌ Sepete ekleme hatası:', error);
+          alert(error.message || 'Ürün sepete eklenemedi. Bu ürün zaten sepette olabilir.');
+        });
+    }
+    
+    // Modal'ı göster
+    function showCartModal() {
+      var modal = document.getElementById('cart-modal');
+      if (!modal) {
+        createCartModal();
+        modal = document.getElementById('cart-modal');
+      }
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+    
+    // Modal'ı gizle
+    function hideCartModal() {
+      var modal = document.getElementById('cart-modal');
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+    
+    // Modal oluştur
+    function createCartModal() {
+      var modal = document.createElement('div');
+      modal.id = 'cart-modal';
+      
+      var modalContent = document.createElement('div');
+      modalContent.id = 'cart-modal-content';
+      
+      var title = document.createElement('h3');
+      title.textContent = 'Artikel wurde zum Warenkorb hinzugefügt';
+      
+      var buttons = document.createElement('div');
+      buttons.id = 'cart-modal-buttons';
+      
+      var continueBtn = document.createElement('button');
+      continueBtn.id = 'cart-continue-btn';
+      continueBtn.textContent = 'Einkauf fortsetzen';
+      continueBtn.addEventListener('click', function() {
+        hideCartModal();
+      });
+      
+      var checkoutBtn = document.createElement('button');
+      checkoutBtn.id = 'cart-checkout-btn';
+      checkoutBtn.textContent = 'Zur Kasse';
+      checkoutBtn.addEventListener('click', function() {
+        // Sipariş sayfasına yönlendir (şimdilik ana sayfaya)
+        window.location.href = '/';
+      });
+      
+      buttons.appendChild(continueBtn);
+      buttons.appendChild(checkoutBtn);
+      
+      modalContent.appendChild(title);
+      modalContent.appendChild(buttons);
+      
+      modal.appendChild(modalContent);
+      
+      // Modal dışına tıklandığında kapat
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          hideCartModal();
+        }
+      });
+      
+      document.body.appendChild(modal);
+    }
+    
+    // Sayfadaki tüm sepete ekleme butonlarına click handler ekle
+    function attachAddToCartHandlers() {
+      var addToCartButtons = document.querySelectorAll('[data-test="a2c-Button"], button[aria-label*="Warenkorb"]');
+      
+      // "In den Warenkorb" yazısı içeren butonları da bul
+      var allButtons = document.querySelectorAll('button');
+      allButtons.forEach(function(button) {
+        if (button.textContent && button.textContent.includes('In den Warenkorb')) {
+          if (!Array.from(addToCartButtons).includes(button)) {
+            addToCartButtons = Array.from(addToCartButtons);
+            addToCartButtons.push(button);
+          }
+        }
+      });
+      
+      addToCartButtons.forEach(function(button) {
+        // Zaten handler eklenmiş mi kontrol et
+        if (!button.hasAttribute('data-cart-handler-attached')) {
+          button.setAttribute('data-cart-handler-attached', 'true');
+          button.addEventListener('click', function(e) {
+            // Eğer buton disabled değilse
+            if (!button.hasAttribute('aria-disabled') || button.getAttribute('aria-disabled') === 'false') {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart();
+            }
+          });
+        }
+      });
+    }
+    
+    // Sayfa yüklendiğinde sepet sayısını güncelle ve handler'ları ekle
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          updateCartBadge();
+          attachAddToCartHandlers();
+        }, 500);
+      });
+    } else {
+      setTimeout(function() {
+        updateCartBadge();
+        attachAddToCartHandlers();
+      }, 500);
+    }
+    
+    // DOM değişikliklerini izle (dinamik butonlar için)
+    var observer = new MutationObserver(function(mutations) {
+      attachAddToCartHandlers();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    // Global fonksiyon olarak export et
+    window.handleAddToCart = handleAddToCart;
+    window.updateCartBadge = updateCartBadge;
   })();
   </script>
   

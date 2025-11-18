@@ -45,6 +45,10 @@
         {
           "source": "/api/init",
           "destination": "/api/init.js"
+        },
+        {
+          "source": "/api/cart",
+          "destination": "/api/cart.js"
         }
   ],
   "headers": [
