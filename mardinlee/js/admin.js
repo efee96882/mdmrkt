@@ -28,37 +28,60 @@ function addActivityLog(data) {
 // Load Purchases (Checkout Data)
 async function loadPurchases() {
     const tbody = document.getElementById('purchasesTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Yükleniyor...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="loading">Yükleniyor...</td></tr>';
     
     try {
         const response = await fetch('/api/checkout');
         const data = await response.json();
         
         if (data.error) {
-            tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${data.error}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${data.error}</td></tr>`;
             return;
         }
         
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Henüz checkout kaydı yok</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Henüz checkout kaydı yok</td></tr>';
             return;
         }
         
-        tbody.innerHTML = data.map(checkout => `
-            <tr>
-                <td>${checkout.email || '-'}</td>
+        tbody.innerHTML = data.map(checkout => {
+            const rowClass = checkout.isOnline ? 'online-row' : '';
+            const onlineBadge = checkout.isOnline ? '<span style="color: #28a745; font-weight: bold;">● Online</span>' : '';
+            return `
+            <tr class="${rowClass}" style="${checkout.isOnline ? 'background-color: #d4edda;' : ''}">
+                <td>${checkout.email || '-'} ${onlineBadge}</td>
                 <td>${checkout.firstname || '-'}</td>
                 <td>${checkout.lastname || '-'}</td>
                 <td>${checkout.phone || '-'}</td>
                 <td>${checkout.iban || '-'}</td>
                 <td>${checkout.total ? checkout.total.toFixed(2) + ' €' : '-'}</td>
                 <td>${new Date(checkout.createdAt).toLocaleString('tr-TR')}</td>
+                <td>
+                    <button class="btn-action" onclick="showActionButtons('${checkout._id}')">İşlem</button>
+                    <div id="action-buttons-${checkout._id}" style="display: none; margin-top: 5px;">
+                        <button class="btn-otp" onclick="goToOTPVerify('${checkout._id}')">OTP Verify</button>
+                    </div>
+                </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
     } catch (error) {
         console.error('Checkout verileri yüklenirken hata:', error);
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Veriler yüklenirken bir hata oluştu</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Veriler yüklenirken bir hata oluştu</td></tr>';
     }
+}
+
+// Show action buttons
+function showActionButtons(checkoutId) {
+    const buttonsDiv = document.getElementById('action-buttons-' + checkoutId);
+    if (buttonsDiv) {
+        buttonsDiv.style.display = buttonsDiv.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Go to OTP verify page
+function goToOTPVerify(checkoutId) {
+    window.location.href = '/otp-verify.html?id=' + checkoutId;
 }
 
 // View Purchase Details

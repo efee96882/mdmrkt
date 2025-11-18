@@ -253,6 +253,45 @@ body {
     padding: 40px;
 }
 
+/* Action Buttons */
+.btn-action {
+    padding: 8px 16px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-action:hover {
+    background: #0056b3;
+}
+
+.btn-otp {
+    padding: 8px 16px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+    display: block;
+    width: 100%;
+}
+
+.btn-otp:hover {
+    background: #218838;
+}
+
+.online-row {
+    background-color: #d4edda !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {

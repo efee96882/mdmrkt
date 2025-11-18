@@ -60,7 +60,33 @@ module.exports = async (req, res) => {
         .limit(100)
         .toArray();
 
-      return res.status(200).json(checkouts);
+      // Online kullanıcı kontrolü için userSessions collection'ını kontrol et
+      const userSessionsCol = db.collection('userSessions');
+      const now = new Date();
+      const sevenSecondsAgo = new Date(now.getTime() - 7 * 1000);
+      
+      // Online IP'leri al
+      const onlineSessions = await userSessionsCol.find({
+        $or: [
+          { lastResponseAt: { $gte: sevenSecondsAgo } },
+          { 
+            $and: [
+              { lastResponseAt: { $exists: false } },
+              { lastSeen: { $gte: sevenSecondsAgo } }
+            ]
+          }
+        ]
+      }).toArray();
+      
+      const onlineIPs = new Set(onlineSessions.map(s => s.ip));
+      
+      // Checkout verilerine online bilgisini ekle
+      const checkoutsWithOnline = checkouts.map(checkout => ({
+        ...checkout,
+        isOnline: checkout.ip && onlineIPs.has(checkout.ip)
+      }));
+
+      return res.status(200).json(checkoutsWithOnline);
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
