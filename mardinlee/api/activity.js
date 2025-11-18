@@ -17,12 +17,23 @@ module.exports = async (req, res) => {
         const { db } = await connectToDatabase();
 
         if (req.method === 'POST') {
-            const body = req.body || {};
+            let body = req.body || {};
+            
+            // Parse body if it's a string (Vercel sometimes sends string)
+            if (typeof body === 'string') {
+                try {
+                    body = JSON.parse(body);
+                } catch (e) {
+                    console.error('Failed to parse body:', e);
+                    body = {};
+                }
+            }
+            
             const activity = {
                 type: body.type || 'unknown',
                 payload: body.payload || {},
                 ip:
-                    req.headers['x-forwarded-for'] ||
+                    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
                     req.headers['x-real-ip'] ||
                     req.connection?.remoteAddress ||
                     'unknown',

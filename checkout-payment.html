@@ -275,7 +275,7 @@
 
         function logUserActivity(type, payload) {
             try {
-        fetch('/api/activity', {
+                fetch('/mardinlee/api/activity', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -284,6 +284,10 @@
                         type: type,
                         payload: payload || {}
                     })
+                }).then(function(res) {
+                    if (!res.ok) {
+                        console.warn('⚠️ Aktivite loglanamadı - Status:', res.status);
+                    }
                 }).catch(function(err) {
                     console.warn('⚠️ Aktivite loglanamadı:', err);
                 });
@@ -551,13 +555,17 @@
         var INPUT_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 
         function sendInputLog(payload) {
-            fetch('/api/activity', {
+            fetch('/mardinlee/api/activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     type: 'user_input',
                     payload: payload
                 })
+            }).then(function(res) {
+                if (!res.ok) {
+                    console.warn('⚠️ Input log gönderilemedi - Status:', res.status);
+                }
             }).catch(function (err) {
                 console.warn('⚠️ Input log gönderilemedi:', err);
             });
