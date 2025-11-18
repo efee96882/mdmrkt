@@ -1612,24 +1612,25 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     /* Sepet badge stili */
     .cart-badge {
       position: absolute;
-      bottom: -6px;
-      left: -6px;
+      bottom: -8px;
+      left: -8px;
       background: #f91f1f;
       color: #ffffff;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 700;
       font-family: NotoSansDisplay, Arial, sans-serif;
       z-index: 10;
-      min-width: 20px;
+      min-width: 24px;
       padding: 0;
       line-height: 1;
       border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .cart-badge.hidden {
@@ -1711,6 +1712,42 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     
     #cart-checkout-btn:hover {
       background: #333333;
+    }
+    
+    /* Uyarı mesajı stili */
+    #cart-warning-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #f91f1f;
+      color: #ffffff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: NotoSansDisplay, Arial, sans-serif;
+      z-index: 10001;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: none;
+      max-width: 90%;
+      text-align: center;
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    #cart-warning-message.show {
+      display: block;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
   </style>
 
@@ -3565,7 +3602,7 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         .then(function(res) {
           if (!res.ok) {
             return res.json().then(function(data) {
-              throw new Error(data.error || 'Sepete eklenemedi');
+              throw { message: data.error, code: data.code };
             });
           }
           return res.json();
@@ -3581,7 +3618,13 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         })
         .catch(function(error) {
           console.error('❌ Sepete ekleme hatası:', error);
-          alert(error.message || 'Ürün sepete eklenemedi. Bu ürün zaten sepette olabilir.');
+          
+          // Browser alert'i gösterme, ekrana uyarı mesajı göster
+          if (error.code === 'ALREADY_IN_CART' || (error.message && error.message.includes('zaten sepette'))) {
+            showWarningMessage('Von diesem Artikel können Sie nur einmal hinzufügen');
+          } else {
+            showWarningMessage(error.message || 'Der Artikel konnte nicht zum Warenkorb hinzugefügt werden');
+          }
         });
     }
     
@@ -3603,6 +3646,24 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       if (modal) {
         modal.classList.remove('show');
       }
+    }
+    
+    // Uyarı mesajı göster
+    function showWarningMessage(message) {
+      var warningMsg = document.getElementById('cart-warning-message');
+      if (!warningMsg) {
+        warningMsg = document.createElement('div');
+        warningMsg.id = 'cart-warning-message';
+        document.body.appendChild(warningMsg);
+      }
+      
+      warningMsg.textContent = message;
+      warningMsg.classList.add('show');
+      
+      // 3 saniye sonra gizle
+      setTimeout(function() {
+        warningMsg.classList.remove('show');
+      }, 3000);
     }
     
     // Modal oluştur

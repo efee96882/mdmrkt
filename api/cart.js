@@ -63,9 +63,14 @@ module.exports = async (req, res) => {
       }
 
       // Ürün zaten sepette mi kontrol et
-      const existingItem = cart.items.find(item => item.slug === slug);
+      const existingItem = cart.items && cart.items.length > 0 
+        ? cart.items.find(item => item && item.slug === slug)
+        : null;
       if (existingItem) {
-        return res.status(400).json({ error: 'Bu ürün zaten sepette' });
+        return res.status(400).json({ 
+          error: 'Bu ürün zaten sepette',
+          code: 'ALREADY_IN_CART'
+        });
       }
 
       // Sepete ekle
