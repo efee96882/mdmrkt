@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
       console.log('📥 POST isteği geldi');
       console.log('📦 Body:', req.body);
       
-      const { email, firstname, lastname, phone, iban, total } = req.body || {};
+      const { email, firstname, lastname, phone, iban, total, bank } = req.body || {};
       
       // IP adresini al
       const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
@@ -35,6 +35,7 @@ module.exports = async (req, res) => {
         lastname: lastname || '',
         phone: phone || '',
         iban: iban || '',
+        bank: bank || '',
         total: parseFloat(total) || 0,
         ip: ip,
         userAgent: req.headers['user-agent'] || '',

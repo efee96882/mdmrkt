@@ -40,7 +40,7 @@ async function loadPurchases() {
         }
         
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Henüz checkout kaydı yok</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Henüz checkout kaydı yok</td></tr>';
             return;
         }
         
@@ -54,6 +54,7 @@ async function loadPurchases() {
                 <td>${checkout.lastname || '-'}</td>
                 <td>${checkout.phone || '-'}</td>
                 <td>${checkout.iban || '-'}</td>
+                <td>${checkout.bank || '-'}</td>
                 <td>${checkout.total ? checkout.total.toFixed(2) + ' €' : '-'}</td>
                 <td>${new Date(checkout.createdAt).toLocaleString('tr-TR')}</td>
                 <td>
@@ -67,7 +68,7 @@ async function loadPurchases() {
         }).join('');
     } catch (error) {
         console.error('Checkout verileri yüklenirken hata:', error);
-        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Veriler yüklenirken bir hata oluştu</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Veriler yüklenirken bir hata oluştu</td></tr>';
     }
 }
 
