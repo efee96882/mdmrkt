@@ -2036,6 +2036,45 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       if (product.discountedPrice) {
         updateStickyFooterPrice(product.discountedPrice);
       }
+      
+      // Normal ürünler için mms-pdp-details-mainfeatures ve Produktbeschreibung section'ını gizle
+      function hidePhoneSpecificSections() {
+        // mms-pdp-details-mainfeatures elementini bul ve gizle
+        var mainFeaturesElement = document.querySelector('[data-test="mms-pdp-details-mainfeatures"]') ||
+                                  document.querySelector('.mms-pdp-details-mainfeatures') ||
+                                  document.querySelector('#mms-pdp-details-mainfeatures');
+        if (mainFeaturesElement) {
+          mainFeaturesElement.style.display = 'none';
+          console.log('✅ mms-pdp-details-mainfeatures gizlendi');
+        }
+        
+        // Produktbeschreibung section'ını bul ve gizle
+        var descriptionSection = null;
+        var allSections = document.querySelectorAll('section[aria-label]');
+        for (var i = 0; i < allSections.length; i++) {
+          var ariaLabel = allSections[i].getAttribute('aria-label');
+          if (ariaLabel && ariaLabel.includes('Produktbeschreibung')) {
+            descriptionSection = allSections[i];
+            break;
+          }
+        }
+        
+        // Alternatif olarak data-test="pdp-description-content" ile de arayabiliriz
+        if (!descriptionSection) {
+          descriptionSection = document.querySelector('[data-test="pdp-description-content"]') ||
+                              document.querySelector('section[data-test*="description"]');
+        }
+        
+        if (descriptionSection) {
+          descriptionSection.style.display = 'none';
+          console.log('✅ Produktbeschreibung section gizlendi');
+        }
+      }
+      
+      // Biraz bekle ve gizle (DOM yüklenmesi için)
+      setTimeout(hidePhoneSpecificSections, 100);
+      setTimeout(hidePhoneSpecificSections, 500);
+      setTimeout(hidePhoneSpecificSections, 1000);
     }
     
     // Sayfa yüklenene kadar bekle
