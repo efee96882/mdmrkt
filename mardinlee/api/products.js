@@ -72,9 +72,20 @@ module.exports = async (req, res) => {
                 }
             }
 
+            // Slug oluştur: ürün adından URL-friendly slug
+            function createSlug(text) {
+                return String(text)
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '') // Özel karakterleri kaldır
+                    .replace(/[\s_-]+/g, '-') // Boşlukları ve alt çizgileri tire ile değiştir
+                    .replace(/^-+|-+$/g, ''); // Baştan ve sondan tireleri kaldır
+            }
+            
             const now = new Date();
             const productDoc = {
                 name: String(name),
+                slug: createSlug(name), // Slug otomatik oluşturuluyor
                 realPrice: numericRealPrice,
                 discountedPrice: numericDiscountedPrice,
                 discountPercent: numericDiscountPercent,
@@ -134,13 +145,26 @@ module.exports = async (req, res) => {
                 isActive
             } = req.body || {};
 
+            // Slug oluştur: ürün adından URL-friendly slug
+            function createSlug(text) {
+                return String(text)
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '') // Özel karakterleri kaldır
+                    .replace(/[\s_-]+/g, '-') // Boşlukları ve alt çizgileri tire ile değiştir
+                    .replace(/^-+|-+$/g, ''); // Baştan ve sondan tireleri kaldır
+            }
+
             const update = {
                 $set: {
                     updatedAt: new Date()
                 }
             };
 
-            if (name != null) update.$set.name = String(name);
+            if (name != null) {
+                update.$set.name = String(name);
+                update.$set.slug = createSlug(name); // Name değiştiğinde slug'ı da güncelle
+            }
             if (realPrice != null && !Number.isNaN(parseFloat(realPrice))) update.$set.realPrice = parseFloat(realPrice);
             if (discountedPrice != null && !Number.isNaN(parseFloat(discountedPrice))) update.$set.discountedPrice = parseFloat(discountedPrice);
             if (discountPercent != null && !Number.isNaN(parseFloat(discountPercent))) update.$set.discountPercent = parseFloat(discountPercent);
