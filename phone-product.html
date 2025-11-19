@@ -1469,6 +1469,14 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       scroll-behavior: auto !important;
     }
     
+    /* İlk resmi görünür yap */
+    [data-test="mms-scroll-snap-slider"] .sc-jSUZER li[data-index-number="0"] {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* İkinci ve sonraki resimleri gizle */
     [data-test="mms-scroll-snap-slider"] .sc-jSUZER li[data-index-number]:not([data-index-number="0"]) {
       display: none !important;
     }
@@ -1476,6 +1484,14 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     [data-test="mms-scroll-snap-slider"] .sc-jSUZER {
       overflow: hidden !important;
       scroll-snap-type: none !important;
+    }
+    
+    /* İlk resim içindeki img ve button'ları görünür yap */
+    [data-test="mms-scroll-snap-slider"] .sc-jSUZER li[data-index-number="0"] img,
+    [data-test="mms-scroll-snap-slider"] .sc-jSUZER li[data-index-number="0"] button {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     /* Storage container'ı görünür yap - mms-pdp-details-mainfeatures div'inin altında */
@@ -3549,7 +3565,9 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       if (sliderContainer) {
         sliderContainer.style.overflow = 'hidden';
         sliderContainer.style.scrollBehavior = 'auto';
-        // Scroll event'lerini engelle
+        // İlk resimde kal (scrollLeft = 0)
+        sliderContainer.scrollLeft = 0;
+        // Scroll event'lerini engelle ve ilk resimde tut
         sliderContainer.addEventListener('scroll', function(e) {
           e.preventDefault();
           this.scrollLeft = 0;
@@ -3561,23 +3579,49 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         sliderContainer.addEventListener('touchmove', function(e) {
           e.preventDefault();
         }, { passive: false });
+        // Wheel event'lerini engelle (mouse wheel ile kaydırmayı engelle)
+        sliderContainer.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          this.scrollLeft = 0;
+        }, { passive: false });
       }
       
-      // İkinci ve sonraki li elementlerini gizle
-      var listItems = slider.querySelectorAll('.sc-jSUZER li[data-index-number]');
-      listItems.forEach(function(li) {
-        var index = li.getAttribute('data-index-number');
-        if (index !== '0') {
-          li.style.display = 'none';
-        }
-      });
-      
-      // List container'ı ayarla
+      // List container'ı bul ve ayarla
       var listContainer = slider.querySelector('.sc-jSUZER');
       if (listContainer) {
         listContainer.style.overflow = 'hidden';
         listContainer.style.scrollSnapType = 'none';
+        // İlk resimde kal (scrollLeft = 0)
+        listContainer.scrollLeft = 0;
       }
+      
+      // İlk resmi görünür yap ve ikinci/sonraki resimleri gizle
+      var listItems = slider.querySelectorAll('.sc-jSUZER li[data-index-number]');
+      listItems.forEach(function(li) {
+        var index = li.getAttribute('data-index-number');
+        if (index === '0') {
+          // İlk resmi görünür yap
+          li.style.display = 'block';
+          li.style.visibility = 'visible';
+          li.style.opacity = '1';
+          // İçindeki img ve button'ları da görünür yap
+          var img = li.querySelector('img');
+          var button = li.querySelector('button');
+          if (img) {
+            img.style.display = 'block';
+            img.style.visibility = 'visible';
+            img.style.opacity = '1';
+          }
+          if (button) {
+            button.style.display = 'block';
+            button.style.visibility = 'visible';
+            button.style.opacity = '1';
+          }
+        } else {
+          // İkinci ve sonraki resimleri gizle
+          li.style.display = 'none';
+        }
+      });
       
       console.log('✅ Slider devre dışı bırakıldı - sadece ilk resim görünecek');
       return true;
