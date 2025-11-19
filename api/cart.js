@@ -38,16 +38,44 @@ module.exports = async (req, res) => {
 
     // Sepete ekleme
     if (req.method === 'POST') {
-      const { slug, storage, color } = req.body;
+      const { slug, storage, color, name, price, imageUrl } = req.body;
       
       if (!slug) {
         return res.status(400).json({ error: 'Slug gerekli' });
       }
 
-      // Telefon bilgisini al
-      const phone = await phonesCol.findOne({ slug: slug, isActive: { $ne: false } });
+      // Önce telefon bilgisini al
+      let phone = await phonesCol.findOne({ slug: slug, isActive: { $ne: false } });
+      let isNormalProduct = false;
+      
+      // Telefon değilse, normal ürün bilgisini al
       if (!phone) {
-        return res.status(404).json({ error: 'Ürün bulunamadı' });
+        const productsCol = db.collection('products');
+        const product = await productsCol.findOne({ slug: slug, isActive: { $ne: false } });
+        if (product) {
+          // Normal ürün formatını telefon formatına dönüştür
+          phone = {
+            slug: product.slug,
+            name: product.name,
+            baseName: product.name,
+            imageUrl: product.imageUrl,
+            discountedPrice: product.discountedPrice,
+            realPrice: product.realPrice,
+            storageOptions: null, // Normal ürünlerde storage yok
+            colorOptions: null // Normal ürünlerde renk yok
+          };
+          isNormalProduct = true;
+        } else {
+          return res.status(404).json({ error: 'Ürün bulunamadı' });
+        }
+      }
+      
+      // Eğer client'tan name, price, imageUrl gönderilmişse (normal ürün için), bunları kullan
+      if (isNormalProduct && name && price && imageUrl) {
+        phone.name = name;
+        phone.baseName = name;
+        phone.discountedPrice = price;
+        phone.imageUrl = imageUrl;
       }
 
       // Kullanıcının sepetini al veya oluştur
@@ -74,18 +102,34 @@ module.exports = async (req, res) => {
       }
 
       // Sepete ekle
-      const selectedStorage = storage || (phone.storageOptions && phone.storageOptions[0] ? phone.storageOptions[0].storage : '');
-      const storageOption = phone.storageOptions ? phone.storageOptions.find(opt => opt.storage === selectedStorage) : null;
-      
-      // Renk bilgisini al
+      let selectedStorage = null;
+      let storageOption = null;
       let selectedColor = null;
       let colorImageUrl = phone.imageUrl; // Varsayılan olarak ana resim
+      let itemPrice = phone.discountedPrice;
       
-      if (color && phone.colorOptions && phone.colorOptions.length > 0) {
-        const colorOption = phone.colorOptions.find(opt => opt.name === color);
-        if (colorOption) {
-          selectedColor = colorOption.name;
-          colorImageUrl = colorOption.imageUrl || phone.imageUrl;
+      // Normal ürün değilse (telefon ise), storage ve color bilgilerini al
+      if (!isNormalProduct) {
+        selectedStorage = storage || (phone.storageOptions && phone.storageOptions[0] ? phone.storageOptions[0].storage : '');
+        storageOption = phone.storageOptions ? phone.storageOptions.find(opt => opt.storage === selectedStorage) : null;
+        
+        // Renk bilgisini al
+        if (color && phone.colorOptions && phone.colorOptions.length > 0) {
+          const colorOption = phone.colorOptions.find(opt => opt.name === color);
+          if (colorOption) {
+            selectedColor = colorOption.name;
+            colorImageUrl = colorOption.imageUrl || phone.imageUrl;
+          }
+        }
+        
+        // Fiyatı storage option'dan al
+        if (storageOption) {
+          itemPrice = storageOption.discountedPrice;
+        }
+      } else {
+        // Normal ürünler için client'tan gelen fiyatı kullan
+        if (price) {
+          itemPrice = price;
         }
       }
       
@@ -93,9 +137,9 @@ module.exports = async (req, res) => {
         slug: slug,
         name: phone.name || phone.baseName,
         imageUrl: colorImageUrl, // Seçilen renk fotoğrafı veya varsayılan
-        storage: selectedStorage,
-        color: selectedColor, // Seçilen renk adı
-        price: storageOption ? storageOption.discountedPrice : phone.discountedPrice,
+        storage: selectedStorage, // Normal ürünler için null
+        color: selectedColor, // Normal ürünler için null
+        price: itemPrice,
         addedAt: new Date()
       };
 

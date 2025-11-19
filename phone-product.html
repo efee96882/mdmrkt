@@ -3987,20 +3987,66 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         return;
       }
       
+      // Normal ürün bilgilerini sayfadan çek (telefon olmayan ürünler için)
+      var productName = null;
+      var productPrice = null;
+      var productImageUrl = null;
+      
+      // Ürün ismini çek
+      var titleElement = document.querySelector('.sc-94eb08bc-0.dPxwlD, h1.sc-94eb08bc-0.dPxwlD, [data-test="mms-select-details-header"] h1');
+      if (titleElement && titleElement.textContent) {
+        productName = titleElement.textContent.trim();
+      }
+      
+      // Ürün fiyatını çek
+      var priceElement = document.querySelector('[data-test="branded-price-whole-value"], .branded-price-whole-value, [class*="branded-price-whole-value"]');
+      if (priceElement && priceElement.textContent) {
+        var priceText = priceElement.textContent.replace(/[^\d,]/g, '').replace(',', '.');
+        productPrice = parseFloat(priceText);
+        if (isNaN(productPrice)) {
+          productPrice = null;
+        }
+      }
+      
+      // Ürün fotoğrafını çek
+      var imageElement = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image, img.pdp-gallery-image, [data-test="mms-scroll-snap-slider"] img');
+      if (imageElement && imageElement.src) {
+        productImageUrl = imageElement.src;
+      }
+      
+      console.log('🛒 Sepete ekleme bilgileri:', {
+        slug: slug,
+        storage: storage,
+        color: selectedColor,
+        name: productName,
+        price: productPrice,
+        imageUrl: productImageUrl
+      });
+      
       // İşlem başladı
       isAddingToCart = true;
       
-      // Sepete ekle
+      // Sepete ekle - normal ürünler için name, price, imageUrl de gönder
+      var requestBody = {
+        slug: slug,
+        storage: storage,
+        color: selectedColor
+      };
+      
+      // Normal ürün bilgileri varsa ekle
+      if (productName && productPrice && productImageUrl) {
+        requestBody.name = productName;
+        requestBody.price = productPrice;
+        requestBody.imageUrl = productImageUrl;
+        console.log('✅ Normal ürün bilgileri eklendi:', requestBody);
+      }
+      
       fetch('/api/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          slug: slug,
-          storage: storage,
-          color: selectedColor
-        })
+        body: JSON.stringify(requestBody)
       })
         .then(function(res) {
           // Response'u parse et
