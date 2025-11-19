@@ -2030,7 +2030,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       console.log('📱 Telefon yükleniyor, slug:', slug, 'storage:', currentStorage);
       
       // Eğer query string'den fiyatlar gelmişse, direkt HTML'e ekle
-      if (storageOptions.length > 0) {
+      // Sadece telefon ürünleri için storage seçeneklerini göster (pricesParam varsa)
+      if (pricesParam && storageOptions.length > 0) {
       // Başlık güncelle
       if (currentStorage) {
         var titleName = 'iPhone ' + slug.replace('iphone-', '').replace(/-/g, ' ') + ' ' + currentStorage;
@@ -2362,7 +2363,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
           }
           
           // Renk seçimi sistemi - sc-637a2157-0 jjtvgH div'ine ekle (ilk blok)
-          if (phone.colorOptions && phone.colorOptions.length > 0) {
+          // Sadece telefon ürünleri için renk seçeneklerini göster (pricesParam varsa)
+          if (pricesParam && phone.colorOptions && phone.colorOptions.length > 0) {
             console.log('🎨 ColorOptions bulundu:', phone.colorOptions.length, 'renk', phone.colorOptions);
             
             // sc-637a2157-0 jjtvgH div'ini bul
@@ -2722,7 +2724,8 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
         }
         
         // Renk seçimi sistemi - sc-637a2157-0 jjtvgH div'ine ekle
-        if (phone.colorOptions && phone.colorOptions.length > 0) {
+        // Sadece telefon ürünleri için renk seçeneklerini göster (pricesParam varsa)
+        if (pricesParam && phone.colorOptions && phone.colorOptions.length > 0) {
           console.log('🎨 ColorOptions bulundu:', phone.colorOptions.length, 'renk', phone.colorOptions);
           
           // sc-637a2157-0 jjtvgH div'ini bul
