@@ -15,7 +15,24 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
         try {
             const { db } = await connectToDatabase();
+            
+            // Eğer slug parametresi varsa, tek bir ürün getir
+            const slug = req.query.slug;
+            if (slug) {
+                const product = await db.collection('products')
+                    .findOne({ slug: slug, isActive: { $ne: false } });
+                
+                if (!product) {
+                    return res.status(404).json({
+                        error: 'Ürün bulunamadı',
+                        message: 'Slug ile eşleşen ürün bulunamadı'
+                    });
+                }
+                
+                return res.status(200).json(product);
+            }
 
+            // Slug yoksa, tüm ürünleri listele
             const products = await db.collection('products')
                 .find({ isActive: { $ne: false } })
                 .sort({ createdAt: -1 })

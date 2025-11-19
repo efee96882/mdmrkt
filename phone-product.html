@@ -225,8 +225,6 @@
       url(https://www.mediamarkt.de/assets/fonts/Calibri-Bold-subset.woff) format('woff');
   }
   
-  false
-  
   color-scheme: light dark;
 
  </style>
@@ -1984,6 +1982,62 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
       }
     }
     
+    // Normal ürün bilgilerini güncelle (admin panelinden eklenen ürünler için)
+    function updateNormalProductInfo(product) {
+      console.log('🔄 Normal ürün bilgileri güncelleniyor:', product);
+      
+      // Ürün ismini güncelle
+      var titleElement = document.querySelector('.sc-94eb08bc-0.dPxwlD, h1.sc-94eb08bc-0.dPxwlD, [data-test="mms-select-details-header"] h1');
+      if (titleElement && product.baseName) {
+        titleElement.textContent = product.baseName;
+        console.log('✅ Ürün ismi güncellendi:', product.baseName);
+      }
+      
+      // Sayfa başlığını güncelle
+      if (product.baseName) {
+        document.title = product.baseName + ' | MediaMarkt';
+      }
+      
+      // Ürün fiyatını güncelle
+      var priceElement = document.querySelector('[data-test="branded-price-whole-value"], .branded-price-whole-value, [class*="branded-price-whole-value"]');
+      if (priceElement && product.discountedPrice) {
+        var priceValue = Math.floor(product.discountedPrice);
+        priceElement.textContent = priceValue.toString() + ' €';
+        console.log('✅ Ürün fiyatı güncellendi:', priceValue + ' €');
+        
+        // CSS stillerini uygula
+        priceElement.style.fontFamily = 'MMHeadline, Arial, sans-serif';
+        priceElement.style.fontSize = '1.75rem';
+        priceElement.style.fontWeight = '400';
+        priceElement.style.color = '#000000';
+        priceElement.style.textAlign = 'right';
+        
+        if (window.matchMedia && window.matchMedia('(min-width: 47em)').matches) {
+          priceElement.style.fontSize = '3rem';
+        }
+      }
+      
+      // Ürün fotoğrafını güncelle
+      var imageElement = document.querySelector('.sc-68628bc4-1.kDrCpj.pdp-gallery-image, img.pdp-gallery-image, [data-test="mms-scroll-snap-slider"] img');
+      if (imageElement && product.imageUrl) {
+        imageElement.src = product.imageUrl;
+        imageElement.setAttribute('src', product.imageUrl);
+        console.log('✅ Ürün fotoğrafı güncellendi:', product.imageUrl);
+      }
+      
+      // Ürün açıklamasını güncelle
+      var descriptionElement = document.querySelector('[data-test="pdp-description-pim-fallback"] article, .pdp-description-pim-fallback article');
+      if (descriptionElement && product.description) {
+        descriptionElement.innerHTML = '<p>' + product.description + '</p>';
+        console.log('✅ Ürün açıklaması güncellendi');
+      }
+      
+      // Sticky footer fiyatını güncelle
+      if (product.discountedPrice) {
+        updateStickyFooterPrice(product.discountedPrice);
+      }
+    }
+    
     // Sayfa yüklenene kadar bekle
     function initStorageTable() {
       // URL'den slug, storage ve prices parametrelerini al
@@ -3228,13 +3282,43 @@ data-styled.g1023[id="sc-c901a92b-2"]{content:"cFchUl,"}/*!sc*/
     }
     
     // Eğer query string'den fiyatlar gelmemişse, MongoDB'den çek (fallback)
+    // Önce /api/phones endpoint'inden çek, başarısız olursa /api/products endpoint'inden çek
     fetch('/api/phones?slug=' + encodeURIComponent(slug))
       .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) {
+          // Eğer 404 ise, /api/products endpoint'inden çek
+          if (res.status === 404) {
+            console.log('⚠️ /api/phones endpoint\'inde ürün bulunamadı, /api/products endpoint\'inden çekiliyor...');
+            return fetch('/api/products?slug=' + encodeURIComponent(slug))
+              .then(function(res2) {
+                if (!res2.ok) throw new Error('HTTP ' + res2.status);
+                return res2.json();
+              })
+              .then(function(product) {
+                // Normal ürün formatını telefon formatına dönüştür
+                return {
+                  baseName: product.name || '',
+                  imageUrl: product.imageUrl || '',
+                  discountedPrice: product.discountedPrice || 0,
+                  realPrice: product.realPrice || 0,
+                  description: product.description || '',
+                  isNormalProduct: true // Normal ürün olduğunu işaretle
+                };
+              });
+          }
+          throw new Error('HTTP ' + res.status);
+        }
         return res.json();
       })
       .then(function(phone) {
-        console.log('✅ Telefon bilgileri alındı (MongoDB\'den):', phone);
+        console.log('✅ Ürün bilgileri alındı (MongoDB\'den):', phone);
+        
+        // Normal ürün ise (admin panelinden eklenen), bilgileri güncelle
+        if (phone.isNormalProduct) {
+          updateNormalProductInfo(phone);
+          markPageReady();
+          return;
+        }
         
           // Başlık ve meta bilgilerini güncelle
           if (phone.baseName) {
